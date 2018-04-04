@@ -1,11 +1,12 @@
 <?php
-namespace app\components;
+namespace frontend\modules\user\components;
 
-use frontend\models\Auth;
+use frontend\modules\user\models\Auth;
 use frontend\models\User;
 use Yii;
 use yii\authclient\ClientInterface;
 use yii\helpers\ArrayHelper;
+
 
 /**
  * AuthHandler handles successful authentication via Yii auth component
@@ -50,6 +51,10 @@ class AuthHandler
                 if ($email !== null && User::find()->where(['email' => $email])->exists()) {
                     Yii::$app->getSession()->setFlash('error', [
                         Yii::t('app', "User with the same email as in {client} account already exists but isn't linked to it. Login using email first to link it.", ['client' => $this->client->getTitle()]),
+                    ]);
+                } else if ($nickname !== null && User::find()->where(['username' => $nickname])->exists()){
+                    Yii::$app->getSession()->setFlash('error', [
+                        Yii::t('app', "User with the same nickname as in {client} account already exists but isn't linked to it. Login using email first to link it.", ['client' => $this->client->getTitle()]),
                     ]);
                 } else {
                     $password = Yii::$app->security->generateRandomString(6);

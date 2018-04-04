@@ -39,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 Login with:
             </h3>
             <?= yii\authclient\widgets\AuthChoice::widget([
-                 'baseAuthUrl' => ['site/auth'],
+                 'baseAuthUrl' => ['/user/default/auth'],
                  'popupMode' => false,
             ]) ?>
         </div>
