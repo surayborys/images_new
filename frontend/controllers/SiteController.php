@@ -31,6 +31,10 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+         $users = \frontend\models\User::find()->all();
+        
+        return $this->render('index', [
+            'users' => $users,
+        ]);
     }
 }
