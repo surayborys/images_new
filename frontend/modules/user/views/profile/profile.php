@@ -1,10 +1,11 @@
 <?php
 
 /* @var $this yii\web\View */
-/* @var $username frontend\models\User->username*/
+/* @var $user frontend\models\User*/
 
 ?>
 
 <div class="body-content">
-    <h1 class="text-center text-primary">HELLO, <?php echo $username;?></h1>;
+    <h1 class="text-center text-primary"><?php echo $user->username;?></h1>
+    <p><?php echo $user->about?></p>
 </div>

@@ -14,17 +14,36 @@ class ProfileController extends Controller
 {
     /**
      * to view user's profile
-     * @param integer $id
+     * @param integer $nickname
      * @return mixed
      */
-    public function actionView($id)
+    public function actionView($nickname)
     {
-        $user = User::find()->where(['id' => $id])->one();
-        $username = $user->username;
+        $user = User::find()->where(['nickname' => $nickname])->orWhere(['id' => $nickname])->one();
         
         return $this->render('profile', [
-            'username' => $username,
+            'user' => $user,
         ]);
     }
+    
+    /**public function actionGenerate()
+    {
+        $faker = \Faker\Factory::create();
+        
+        for ($i=0;$i<1000;$i++) {
+            $user = new User([
+                'username' => $faker->name,
+                'email' => $faker->email,
+                'about' => $faker->text(200),
+                'nickname' => $faker->regexify('[A-Za-z0-9_]{5,15}'),
+                'auth_key' => \Yii::$app->security->generateRandomString(),
+                'password_hash' => \Yii::$app->security->generateRandomString(),
+                'created_at' => $time = time(),
+                'updated_at' => $time,
+            ]);
+            
+            $user->save(false);
+        }
+    }*/
 }
 
