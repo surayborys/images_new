@@ -210,4 +210,158 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return ($this->nickname) ? $this->nickname : $this->getId();
     }
+    
+    /**
+     * handles following procedure
+     * @param IdentityInterface $user
+     * @return bool
+     */
+    public function follow(IdentityInterface $user)
+    {
+        //forbid user to follow by himself
+        if(intval($this->id) == intval($user->id)) {
+            return false;
+        }
+        
+        $redisKeyForSetUserSubscriptions = 'user:'. intval($this->id).':subscriptions';
+        $redisKeyForSetUserFollowers = 'user:'.intval($user->id).':followers';
+        
+        //initialize redis connection
+        $redis = Yii::$app->redis;
+        
+        $addSubscription = $redis->sadd($redisKeyForSetUserSubscriptions, intval($user->id));
+        $addFollower = $redis->sadd($redisKeyForSetUserFollowers, intval($this->id)); 
+        
+        $checkIfSubscriptionAdded = $redis->sismember($redisKeyForSetUserSubscriptions, intval($user->id));
+        $checkIfFollowerAdded = $redis->sismember($redisKeyForSetUserFollowers, intval($this->id));
+        
+        //if there're no subscription - delete follower
+        if(!$checkIfSubscriptionAdded) {
+            $redis->srem($redisKeyForSetUserFollowers, intval($this->id));
+            return false;
+        }
+        
+        //if the follower hasn't been added - delete subscription
+        if(!$checkIfFollowerAdded) {
+            $redis->srem($redisKeyForSetUserSubscriptions, intval($user->id));
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * to get the subscriptions list of current user
+     * @return array
+     */
+    public function getSubscriptionsList()
+    {
+        //initialize redis connection
+        $redis = Yii::$app->redis;
+        $redisKeyForSetUserSubscriptions = 'user:'. intval($this->id).':subscriptions';
+        
+        $subscriptionsIds = $redis->smembers($redisKeyForSetUserSubscriptions);
+        
+        return static::find()->select('id, username, nickname')->where(['id' => $subscriptionsIds])->orderBy('username')->asArray()->all();
+    }
+    
+    /**
+     * to get the followers list of current user
+     * @return array
+     */
+    public function getFollowersList()
+    {
+        //initialize redis connection
+        $redis = Yii::$app->redis;
+        $redisKeyForSetUserFollowers = 'user:'.intval($this->id).':followers';
+        
+        $followersIds =  $redis->smembers($redisKeyForSetUserFollowers);
+        
+        return static::find()->select('id, username, nickname')->where(['id' => $followersIds])->orderBy('username')->asArray()->all();
+    }
+    
+    /**
+     * to count the number of user's followers
+     * @return int
+     */
+    public function countFollowers()
+    {
+        //initialize redis connection
+        $redis = Yii::$app->redis;
+        $redisKeyForSetUserFollowers = 'user:'.intval($this->id).':followers';
+        
+        return $redis->scard($redisKeyForSetUserFollowers);
+    }
+    
+    /**
+     * to count the number of user's subscriptions
+     * @return int
+     */
+    public function countSubscriptions()
+    {
+        //initialize redis connection
+        $redis = Yii::$app->redis;
+        $redisKeyForSetUserSubscriptions = 'user:'.intval($this->id).':subscriptions';
+        
+        return $redis->scard($redisKeyForSetUserSubscriptions);
+    }
+    
+    /**
+     * handles unsupscription procedure
+     * @param IdentityInterface $user
+     * @return bool
+     */
+    public function unsubscribe(IdentityInterface $user)
+    {
+        $redisKeyForSetUserSubscriptions = 'user:'. intval($this->id).':subscriptions';
+        $redisKeyForSetUserFollowers = 'user:'.intval($user->id).':followers';
+        
+        //initialize redis connection
+        $redis = Yii::$app->redis;
+        
+        $removeSubscription = $redis->srem($redisKeyForSetUserSubscriptions, intval($user->id));
+        $removeFollower = $redis->srem($redisKeyForSetUserFollowers, intval($this->id)); 
+                
+        return true;
+    }
+    
+    /**
+     * to get mutual subscriptions of current user($this) with the given user's($user) followers
+     * 
+     * @param IdentityInterface $user
+     * @return mixed
+     */
+    public function getMutualSubscriptionsTo(IdentityInterface $user){
+        
+        //current user subscriptions
+        $key1 = 'user:' . intval($this->id) . ':subscriptions';
+        //given user followers
+        $key2 = 'user:' . intval($user->id) . ':followers';
+        
+        //initialize redis connection
+        $redis = Yii::$app->redis;
+        
+        //get mutual values from the sets with keys $key1, $key2
+        $ids = $redis->sinter($key1, $key2);
+        
+        return static::find()->select('id, username, nickname')->where(['id' => $ids])->orderBy('username')->asArray()->all();
+    }
+    
+    /**
+     * to check if the current user($this) follows by the given user($user)
+     * 
+     * @param IdentityInterface $user
+     * @return bool
+     */
+    public function checkIfFollowsBy(IdentityInterface $user){
+        
+        //current user's subscriptions
+        $key1 = 'user:' . intval($this->id) . ':subscriptions';
+        
+        //initialize redis connection
+        $redis = Yii::$app->redis;
+        
+        return $redis->sismember($key1, $user->id);
+    }
+    
 }

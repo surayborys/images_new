@@ -46,7 +46,15 @@ return [
             'showScriptName' => false,
             'rules' => [
                 'profile/<nickname:\w+>' => 'user/profile/view',
+                'user/profile/follow/<id:\w+>' =>  'user/profile/follow',
+                'user/profile/unsubscribe/<id:\w+>' =>  'user/profile/unsubscribe',
             ],
+        ],
+        'redis' => [
+            'class' => 'yii\redis\Connection',
+            'hostname' => 'localhost',
+            'port' => 6379,
+            'database' => 0,
         ],
     ],
     'params' => $params,
