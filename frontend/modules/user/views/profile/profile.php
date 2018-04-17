@@ -14,8 +14,15 @@ use yii\helpers\Url;
 ?>
 
 <!--Username-->
-<h1 class="text-center text-primary"><?php echo Html::encode($user->username);?></h1>
+<h1 class="text-center text-primary"><?php echo Html::encode($user->username);?>
+    <?php if(!Yii::$app->user->isGuest && $currentUser->getId() == $user->getId()):?>
+        <a href="<?php echo(Url::to(['/user/profile/edit', 'id'=>$user->getId()]))?>">
+            <button class="btn btn-danger btn-sm" style="width: 120px">Edit profile</button>
+        </a>
+    <?php endif;?>
+</h1>
 <p><?php echo HtmlPurifier::process($user->about);?></p>
+
 <!--/Username-->
 
 <!--SUBSCRIBE AND UNSUBSCRIBE BUTTONS-->

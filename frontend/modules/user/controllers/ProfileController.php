@@ -5,12 +5,15 @@ namespace frontend\modules\user\controllers;
 use Yii;
 use yii\web\Controller;
 use frontend\models\User;
+use frontend\modules\user\models\EditProfileForm;
 use yii\helpers\Url;
+use yii\web\IdentityInterface;
+use yii\web\NotFoundHttpException;
 
 
 
 /**
- * Controller for the user's profile
+ * Controller for the user's (frontend\models\User) profile
  */
 class ProfileController extends Controller
 {
@@ -21,12 +24,12 @@ class ProfileController extends Controller
      */
     public function actionView($nickname)
     {
-        $user = User::find()->where(['nickname' => $nickname])->orWhere(['id' => $nickname])->one();
+        $user = $this->getUserByNickname($nickname);
         $currentUser = Yii::$app->user->identity;
         
         $followers = $user->getFollowersList();
         $subscriptions = $user->getSubscriptionsList();
-      
+        
         
         return $this->render('profile', [
             'user' => $user,
@@ -48,7 +51,7 @@ class ProfileController extends Controller
         /*@var $loggedUser frontend\models\User */
         $loggedUser = Yii::$app->user->identity;
         /*@var $userToFollow frontend\models\User*/
-        $userToFollow = User::find()->where(['id' => $id])->one();
+        $userToFollow = $this->getUserById($id);
         
         if(!$loggedUser || !$userToFollow){
             return $this->redirect(Url::to(['/user/profile/view', 'nickname'=>$userToFollow->getNickname()]));
@@ -70,7 +73,7 @@ class ProfileController extends Controller
         /*@var $loggedUser frontend\models\User */
         $loggedUser = Yii::$app->user->identity;
         /*@var $userToFollow frontend\models\User*/
-        $userToUnsubscribe = User::find()->where(['id' => $id])->one();
+        $userToUnsubscribe = $this->getUserById($id);
         
         if(!$loggedUser || !$userToUnsubscribe){
             return $this->redirect(Url::to(['/user/profile/view', 'nickname'=>$userToFollow->getNickname()]));
@@ -78,6 +81,115 @@ class ProfileController extends Controller
         
         $result = $loggedUser->unsubscribe($userToUnsubscribe);
         return $this->redirect(Url::to(['/user/profile/view', 'nickname'=>$userToUnsubscribe->getNickname()]));
+    }
+    
+    /**
+     * <b>to edit user's with id = $id profile and save changes to the 'user' table</b>
+     * 
+     * <p>gives access only for logged users. allows to edit only logged user's own profile</p>
+     * 
+     * @param int $id
+     * @return mixed
+     */
+    public function actionEdit($id){
+               
+        if(!$this->checkAccessForProfileEdition($id)) {
+            Yii::$app->session->setFlash('error', 'unexpected identifier.');
+            return $this->redirect(Url::to(['/site/index']));
+        }
+        
+        $userData = User::find()->select('username, nickname, type, picture, about')->where(['id'=>intval($id)])->one();
+        
+        /*@var IdentityInterface $user*/
+        $user = $this->getUserById(intval($id));
+        $editProfileForm = new EditProfileForm();
+        $editProfileForm->scenario = EditProfileForm::SCENARIO_PROFILE_UPDATE;
+        
+        if($editProfileForm->load(Yii::$app->request->post()) && $editProfileForm->validate()) {
+            if($editProfileForm->update($user)) {                
+               Yii::$app->session->setFlash('success', 'Profile data successfully updated.');
+            } else {
+                Yii::$app->session->setFlash('error', 'Error while trying to update profile. Please, try again later');
+            }
+            return $this->redirect(Url::to(['/user/profile/view', 'nickname'=> $user->getNickname()]));
+        }
+        
+        $editProfileForm->username = $userData->username;
+        $editProfileForm->nickname = $userData->nickname;
+        $editProfileForm->about = $userData->about;
+        $editProfileForm->type = $userData->type;
+        $editProfileForm->picture = $userData->picture;
+        
+        if($editProfileForm->validate()){
+            return $this->render('edit', [
+                'editProfileForm' => $editProfileForm,
+            ]);
+        }else{
+            Yii::$app->session->setFlash('error', 'Enable to load profile data. We\'re working to fix the problem as soon as posible');
+            return $this->actionMailToAdmin($user);
+        }        
+    }
+    
+    /**
+     * to send email to admin with a validation error description
+     * 
+     * @param IdentityInterface $user
+     * @return mixed
+     */
+    private function actionMailToAdmin(IdentityInterface $user) {
+        
+        if(!$this->checkAccessForProfileEdition($user->id)) {
+            Yii::$app->session->setFlash('error', 'unexpected identifier.');
+            return $this->redirect(Url::to(['/site/index']));
+        }
+        
+        $adminEmail = Yii::$app->params['adminEmail'];  
+        
+        $result = Yii::$app->mailer->compose()
+                ->setFrom('boryssuray@gmail.com')
+                ->setTo($adminEmail)
+                ->setSubject('ERROR VALIDATING PROFILE')
+                ->setTextBody('CHECK DATABASE RECORD IN THE USER TABLE. USER ID  = ' . $user->id)
+                ->setHtmlBody('<b>CHECK DATABASE RECORD IN THE USER TABLE. USER ID = </b>' . $user->id)
+                ->send();
+        
+        return $this->redirect(Url::to(['/user/profile/view', 'nickname'=> $user->getNickname()]));
+    }
+    
+    /**
+     * check, if the logged user Yii::$app->user->identity and the user with id = $id, whose profile is trying to be changed, are identical
+     * @param integer $id
+     * @return bool
+     */
+    private function checkAccessForProfileEdition($id){
+        if(\Yii::$app->user->isGuest || intval(\Yii::$app->user->identity->id) !== intval($id)){
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * @param int $id
+     * @return mixed
+     * @throws NotFoundHttpException
+     */
+    private function getUserById($id){
+        if ($user =  User::find()->where(['id' => $id])->one()){
+            return $user;
+        }        
+        throw new NotFoundHttpException();
+    }
+    
+    /**
+     * @param string $nickname
+     * @return mixed
+     * @throws NotFoundHttpException
+     */
+    private function getUserByNickname($nickname){
+        if ($user =  User::find()->where(['nickname' => $nickname])->orWhere(['id' => $nickname])->one()){
+            return $user;
+        }
+        throw new NotFoundHttpException();
     }
 }
 

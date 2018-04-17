@@ -48,6 +48,7 @@ return [
                 'profile/<nickname:\w+>' => 'user/profile/view',
                 'user/profile/follow/<id:\w+>' =>  'user/profile/follow',
                 'user/profile/unsubscribe/<id:\w+>' =>  'user/profile/unsubscribe',
+                'user/profile/edit/<id:\w+>' => 'user/profile/edit',
             ],
         ],
         'redis' => [
