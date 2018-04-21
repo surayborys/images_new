@@ -364,4 +364,13 @@ class User extends ActiveRecord implements IdentityInterface
         return $redis->sismember($key1, $user->id);
     }
     
+    /**
+     * to get user's profile picture
+     * @return string
+     */
+    public function getPicture()
+    {
+        return ($this->picture) ? Yii::$app->storage->getFile($this->picture) : '#';
+    }
+    
 }

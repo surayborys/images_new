@@ -4,8 +4,216 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "fe339f5a08c69c388c6825089f3b7f4a",
+    "content-hash": "f1177202da9f75a630b6dee3a9ccf6c1",
     "packages": [
+        {
+            "name": "2amigos/yii2-file-upload-widget",
+            "version": "1.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/2amigos/yii2-file-upload-widget.git",
+                "reference": "2fd078f589d4acdd2cbfb70eea88d526480b0102"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/2amigos/yii2-file-upload-widget/zipball/2fd078f589d4acdd2cbfb70eea88d526480b0102",
+                "reference": "2fd078f589d4acdd2cbfb70eea88d526480b0102",
+                "shasum": ""
+            },
+            "require": {
+                "2amigos/yii2-gallery-widget": "~1.0",
+                "bower-asset/blueimp-file-upload": "~9.9",
+                "yiisoft/yii2": "~2.0.0",
+                "yiisoft/yii2-bootstrap": "~2.0.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "dosamigos\\fileupload\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "2amigOS! Consulting Group",
+                    "email": "hola@2amigos.us",
+                    "homepage": "http://2amigos.us",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Blueimp file upload widget for the Yii framework",
+            "homepage": "https://github.com/2amigos/yii2-file-upload-widget",
+            "keywords": [
+                "2amigos",
+                "upload",
+                "widget",
+                "yii",
+                "yii 2",
+                "yii2"
+            ],
+            "time": "2017-10-17T11:18:48+00:00"
+        },
+        {
+            "name": "2amigos/yii2-gallery-widget",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/2amigos/yii2-gallery-widget.git",
+                "reference": "0ce7de28d05a4662da7698773993b5a0245a6136"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/2amigos/yii2-gallery-widget/zipball/0ce7de28d05a4662da7698773993b5a0245a6136",
+                "reference": "0ce7de28d05a4662da7698773993b5a0245a6136",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/blueimp-gallery": "~2.17.0",
+                "yiisoft/yii2": "~2.0.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0",
+                "scrutinizer/ocular": "~1.1"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "asset-installer-paths": {
+                    "npm-asset-library": "vendor/npm",
+                    "bower-asset-library": "vendor/bower"
+                },
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "dosamigos\\gallery\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "2amigOS! Consulting Group",
+                    "email": "hola@2amigos.us",
+                    "homepage": "http://2amigos.us",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Blueimp gallery widget for the Yii framework",
+            "homepage": "https://github.com/2amigos/yii2-gallery-widget",
+            "keywords": [
+                "2amigos",
+                "gallery",
+                "widget",
+                "yii",
+                "yii 2",
+                "yii2"
+            ],
+            "time": "2017-09-09T16:01:44+00:00"
+        },
+        {
+            "name": "bower-asset/blueimp-canvas-to-blob",
+            "version": "v3.14.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:blueimp/JavaScript-Canvas-to-Blob.git",
+                "reference": "9f3deb2e710d39c72a988559609d9dc9a319de0b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/blueimp/JavaScript-Canvas-to-Blob/zipball/9f3deb2e710d39c72a988559609d9dc9a319de0b",
+                "reference": "9f3deb2e710d39c72a988559609d9dc9a319de0b",
+                "shasum": null
+            },
+            "type": "bower-asset"
+        },
+        {
+            "name": "bower-asset/blueimp-file-upload",
+            "version": "v9.21.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/blueimp/jQuery-File-Upload.git",
+                "reference": "e6f059023afdae3efe9ce66970745254caa80256"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/blueimp/jQuery-File-Upload/zipball/e6f059023afdae3efe9ce66970745254caa80256",
+                "reference": "e6f059023afdae3efe9ce66970745254caa80256",
+                "shasum": null
+            },
+            "require": {
+                "bower-asset/blueimp-canvas-to-blob": ">=2.1.1",
+                "bower-asset/blueimp-load-image": ">=1.13.0",
+                "bower-asset/blueimp-tmpl": ">=2.5.4",
+                "bower-asset/jquery": ">=1.6"
+            },
+            "type": "bower-asset",
+            "license": [
+                "MIT"
+            ]
+        },
+        {
+            "name": "bower-asset/blueimp-gallery",
+            "version": "v2.17.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/blueimp/Gallery.git",
+                "reference": "8336bb5934cb623608808601129db3fbf9201a09"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/blueimp/Gallery/zipball/8336bb5934cb623608808601129db3fbf9201a09",
+                "reference": "8336bb5934cb623608808601129db3fbf9201a09",
+                "shasum": null
+            },
+            "type": "bower-asset"
+        },
+        {
+            "name": "bower-asset/blueimp-load-image",
+            "version": "v2.19.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/blueimp/JavaScript-Load-Image.git",
+                "reference": "5660ef0f68a34352f4574351ab86f3ecf82240f2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/blueimp/JavaScript-Load-Image/zipball/5660ef0f68a34352f4574351ab86f3ecf82240f2",
+                "reference": "5660ef0f68a34352f4574351ab86f3ecf82240f2",
+                "shasum": null
+            },
+            "type": "bower-asset"
+        },
+        {
+            "name": "bower-asset/blueimp-tmpl",
+            "version": "v3.11.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:blueimp/JavaScript-Templates.git",
+                "reference": "da7647cb93fff2030e73a701db22c66de76a9919"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/blueimp/JavaScript-Templates/zipball/da7647cb93fff2030e73a701db22c66de76a9919",
+                "reference": "da7647cb93fff2030e73a701db22c66de76a9919",
+                "shasum": null
+            },
+            "type": "bower-asset"
+        },
         {
             "name": "bower-asset/bootstrap",
             "version": "v3.3.7",

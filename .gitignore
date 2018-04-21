@@ -33,3 +33,6 @@ phpunit.phar
 
 # vagrant runtime
 /.vagrant
+
+# uploads in the frontend/web
+/frontend/web/uploads/

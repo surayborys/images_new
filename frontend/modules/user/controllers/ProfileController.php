@@ -9,6 +9,8 @@ use frontend\modules\user\models\EditProfileForm;
 use yii\helpers\Url;
 use yii\web\IdentityInterface;
 use yii\web\NotFoundHttpException;
+use frontend\modules\user\models\forms\PictureForm;
+use yii\web\UploadedFile;
 
 
 
@@ -30,12 +32,15 @@ class ProfileController extends Controller
         $followers = $user->getFollowersList();
         $subscriptions = $user->getSubscriptionsList();
         
+        $pictureModel = new PictureForm();
+        
         
         return $this->render('profile', [
             'user' => $user,
             'followers' => $followers,
             'subscriptions' => $subscriptions,
             'currentUser' => $currentUser,
+            'pictureModel' => $pictureModel,
         ]);
     }
     
@@ -190,6 +195,29 @@ class ProfileController extends Controller
             return $user;
         }
         throw new NotFoundHttpException();
+    }
+    
+    public function actionUploadPicture(){
+        
+        $model = new PictureForm();
+        $model->picture = UploadedFile::getInstance($model, 'picture');
+        
+        if($model->validate()) {
+            
+            //attach picture to the user
+            $user = Yii::$app->user->identity;
+            $user->picture = Yii::$app->storage->saveUploadedFile($model->picture);
+            
+            if($user->save(false, ['picture'])) {
+                echo '<pre>';
+                print_r($user->attributes);
+                echo '</pre>';
+            }
+        } else {
+             echo '<pre>';
+            print_r($model->getErrors());
+            echo '</pre>';
+        }
     }
 }
 

@@ -1,26 +1,50 @@
 <?php
 
 /* @var $this yii\web\View */
-/* @var $user frontend\models\User*/
-/* @var $followers*/
-/* @var $subscriptions*/
-/* @var $currentUser frontend\models\User*/
+/* @var $user frontend\models\User */
+/* @var $followers */
+/* @var $subscriptions */
+/* @var $currentUser frontend\models\User */
+/* @var $pictureModel frontend\modules\user\models\forms\PictureForm */
 
 
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
 use yii\helpers\Url;
+use dosamigos\fileupload\FileUpload;
 
 ?>
 
-<!--Username-->
-<h1 class="text-center text-primary"><?php echo Html::encode($user->username);?>
+<!--Username, Select picture, Edit profile -->
+<h1 class="text-center text-primary"><?php echo Html::encode($user->username);?> </h1>
+<div  class="text-center">
+    <img src="<?php echo $user->getPicture(); ?>" alt="select your profile image" style="border-radius: 50%; width: 125px; height: 125px">
     <?php if(!Yii::$app->user->isGuest && $currentUser->getId() == $user->getId()):?>
         <a href="<?php echo(Url::to(['/user/profile/edit', 'id'=>$user->getId()]))?>">
             <button class="btn btn-danger btn-sm" style="width: 120px">Edit profile</button>
         </a>
+        <!--FILE UPLOAD BUTTON-->
+        <?= FileUpload::widget([
+            'model' => $pictureModel,
+            'attribute' => 'picture',
+            'url' => ['/user/profile/upload-picture'], // your url, this is just for demo purposes,
+            'options' => ['accept' => 'image/*'],
+            // Also, you can specify jQuery-File-Upload events
+            // see: https://github.com/blueimp/jQuery-File-Upload/wiki/Options#processing-callback-options
+            'clientEvents' => [
+                'fileuploaddone' => 'function(e, data) {
+                                        console.log(e);
+                                        console.log(data);
+                                    }',
+                'fileuploadfail' => 'function(e, data) {
+                                        console.log(e);
+                                        console.log(data);
+                                    }',
+            ],
+        ]); ?>
+        <!--/FILE UPLOAD BUTTON-->
     <?php endif;?>
-</h1>
+</div>
 <p><?php echo HtmlPurifier::process($user->about);?></p>
 
 <!--/Username-->
