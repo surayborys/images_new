@@ -18,7 +18,7 @@ use dosamigos\fileupload\FileUpload;
 <!--Username, Select picture, Edit profile -->
 <h1 class="text-center text-primary"><?php echo Html::encode($user->username);?> </h1>
 <div  class="text-center">
-    <img src="<?php echo $user->getPicture(); ?>" alt="select your profile image" style="border-radius: 50%; width: 125px; height: 125px">
+    <img src="<?php echo $user->getPicture(); ?>" id="profile-picture" alt="select your profile image" style="border-radius: 50%; width: 125px; height: 125px">
     <?php if(!Yii::$app->user->isGuest && $currentUser->getId() == $user->getId()):?>
         <a href="<?php echo(Url::to(['/user/profile/edit', 'id'=>$user->getId()]))?>">
             <button class="btn btn-danger btn-sm" style="width: 120px">Edit profile</button>
@@ -33,18 +33,22 @@ use dosamigos\fileupload\FileUpload;
             // see: https://github.com/blueimp/jQuery-File-Upload/wiki/Options#processing-callback-options
             'clientEvents' => [
                 'fileuploaddone' => 'function(e, data) {
-                                        console.log(e);
-                                        console.log(data);
-                                    }',
-                'fileuploadfail' => 'function(e, data) {
-                                        console.log(e);
-                                        console.log(data);
-                                    }',
+                    if(data.result.success){
+                        $("#profile-image-success").show();
+                        $("#profile-image-fail").hide();
+                        $("#profile-picture").attr("src", data.result.pictureUri);
+                    }else{
+                        $("#profile-image-success").hide();
+                        $("#profile-image-fail").html(data.result.errors.picture).show();
+                    }
+                }',
             ],
         ]); ?>
         <!--/FILE UPLOAD BUTTON-->
     <?php endif;?>
 </div>
+<div class="alert alert-success" id="profile-image-success" style="display: none">Profile succesfully updated</div>
+<div class="alert alert-danger" id="profile-image-fail" style="display: none"></div>
 <p><?php echo HtmlPurifier::process($user->about);?></p>
 
 <!--/Username-->

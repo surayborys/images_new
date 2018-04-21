@@ -11,6 +11,7 @@ use yii\web\IdentityInterface;
 use yii\web\NotFoundHttpException;
 use frontend\modules\user\models\forms\PictureForm;
 use yii\web\UploadedFile;
+use yii\web\Response;
 
 
 
@@ -103,7 +104,7 @@ class ProfileController extends Controller
             return $this->redirect(Url::to(['/site/index']));
         }
         
-        $userData = User::find()->select('username, nickname, type, picture, about')->where(['id'=>intval($id)])->one();
+        $userData = User::find()->select('username, nickname, type, about')->where(['id'=>intval($id)])->one();
         
         /*@var IdentityInterface $user*/
         $user = $this->getUserById(intval($id));
@@ -123,7 +124,6 @@ class ProfileController extends Controller
         $editProfileForm->nickname = $userData->nickname;
         $editProfileForm->about = $userData->about;
         $editProfileForm->type = $userData->type;
-        $editProfileForm->picture = $userData->picture;
         
         if($editProfileForm->validate()){
             return $this->render('edit', [
@@ -199,6 +199,9 @@ class ProfileController extends Controller
     
     public function actionUploadPicture(){
         
+        //set server responce format to JSON
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        
         $model = new PictureForm();
         $model->picture = UploadedFile::getInstance($model, 'picture');
         
@@ -209,15 +212,17 @@ class ProfileController extends Controller
             $user->picture = Yii::$app->storage->saveUploadedFile($model->picture);
             
             if($user->save(false, ['picture'])) {
-                echo '<pre>';
-                print_r($user->attributes);
-                echo '</pre>';
+                return [
+                    'success' => true,
+                    'pictureUri' => Yii::$app->storage->getFile($user->picture),
+                ];
             }
-        } else {
-             echo '<pre>';
-            print_r($model->getErrors());
-            echo '</pre>';
-        }
+        } 
+        
+        return [
+            'success' => false,
+            'errors' => $model->getErrors(),
+        ];
     }
 }
 

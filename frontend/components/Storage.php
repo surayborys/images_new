@@ -32,6 +32,11 @@ class Storage extends Component implements StorageInterface {
         
     }
     
+    /**
+     * get  file uri from the given build-from-hash filename
+     * @param string $filename
+     * @return string
+     */
     public function getFile(string $filename){
         return Yii::$app->params['storageUri'] . $filename;
     }

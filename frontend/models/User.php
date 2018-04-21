@@ -365,12 +365,12 @@ class User extends ActiveRecord implements IdentityInterface
     }
     
     /**
-     * to get user's profile picture
+     * to get user's profile picture or use default profile picture
      * @return string
      */
     public function getPicture()
     {
-        return ($this->picture) ? Yii::$app->storage->getFile($this->picture) : '#';
+        return ($this->picture) ? Yii::$app->storage->getFile($this->picture) : Yii::$app->params['defaultProfileImage'];
     }
     
 }

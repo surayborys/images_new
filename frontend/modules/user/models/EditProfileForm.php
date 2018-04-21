@@ -7,6 +7,11 @@ use yii\web\IdentityInterface;
 
 /**
  * Edit Profile Form
+ * 
+ * @property string $username
+ * @property string $nickname
+ * @property int $type
+ * @property string $about 
  *
  * @author Borys Suray <surayborys@gmail.com>
  */
@@ -18,7 +23,6 @@ class EditProfileForm extends Model {
     public $nickname;
     public $type;
     public $about;
-    public $picture;
     
     /**
      * describes scenario @const SCENARIO_PROFILE_UPDATE
@@ -27,7 +31,7 @@ class EditProfileForm extends Model {
     public function scenarios() {
         return [
             self::SCENARIO_PROFILE_UPDATE => [
-                'username', 'nickname','about', 'type', 'picture',
+                'username', 'nickname','about', 'type',
             ],
         ];        
     }
@@ -62,7 +66,6 @@ class EditProfileForm extends Model {
         $user->nickname = ($this->nickname) ? $this->nickname : '';
         $user->about = ($this->about) ? $this->about : '';
         $user->type = $this->type;
-        $user->picture = ($this->picture) ? $this->picture : '';
         
         return ($user->save()) ? true : false;
     }
