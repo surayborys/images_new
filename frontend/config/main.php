@@ -49,6 +49,7 @@ return [
                 'user/profile/follow/<id:\w+>' =>  'user/profile/follow',
                 'user/profile/unsubscribe/<id:\w+>' =>  'user/profile/unsubscribe',
                 'user/profile/edit/<id:\w+>' => 'user/profile/edit',
+                'user/profile/unset-picture/<id:\w+>' => 'user/profile/unset-picture',
             ],
         ],
         'redis' => [

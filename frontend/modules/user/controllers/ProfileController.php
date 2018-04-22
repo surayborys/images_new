@@ -197,6 +197,10 @@ class ProfileController extends Controller
         throw new NotFoundHttpException();
     }
     
+    /**
+     * upload profile picture and attach it to user
+     * @return array
+     */
     public function actionUploadPicture(){
         
         //set server responce format to JSON
@@ -223,6 +227,25 @@ class ProfileController extends Controller
             'success' => false,
             'errors' => $model->getErrors(),
         ];
+    }
+    
+    /**
+     * unset user's profile picture
+     * @param int $id
+     * @return mixed
+     */
+    public function actionUnsetPicture($id)
+    {
+        if($this->checkAccessForProfileEdition($id)){
+            $user = $this->getUserById($id);
+            $user->picture = null;
+            if($user->save()){
+                Yii::$app->session->setFlash('success', 'Profile image has been successfully unseted.');
+            }
+            return $this->redirect(Url::to(['/user/profile/view', 'nickname'=> $user->getNickname()]));
+        }
+        Yii::$app->session->setFlash('error', 'Enable to unset image');
+        return $this->redirect(Url::to(['/user/profile/view', 'nickname'=> $user->getNickname()]));        
     }
 }
 

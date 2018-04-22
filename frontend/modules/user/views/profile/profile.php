@@ -18,10 +18,13 @@ use dosamigos\fileupload\FileUpload;
 <!--Username, Select picture, Edit profile -->
 <h1 class="text-center text-primary"><?php echo Html::encode($user->username);?> </h1>
 <div  class="text-center">
-    <img src="<?php echo $user->getPicture(); ?>" id="profile-picture" alt="select your profile image" style="border-radius: 50%; width: 125px; height: 125px">
+    <img src="<?php echo $user->getPicture(); ?>" id="profile-picture" alt="select your profile image" style="border-radius: 50%; width: 175px; height: 175px">
     <?php if(!Yii::$app->user->isGuest && $currentUser->getId() == $user->getId()):?>
         <a href="<?php echo(Url::to(['/user/profile/edit', 'id'=>$user->getId()]))?>">
             <button class="btn btn-danger btn-sm" style="width: 120px">Edit profile</button>
+        </a>
+        <a href="<?php echo(Url::to(['/user/profile/unset-picture', 'id'=>$user->getId()]))?>">
+            <button class="btn btn-danger btn-sm" style="width: 120px">Unset picture</button>
         </a>
         <!--FILE UPLOAD BUTTON-->
         <?= FileUpload::widget([

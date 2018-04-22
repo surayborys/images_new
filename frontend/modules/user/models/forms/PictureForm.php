@@ -3,6 +3,7 @@
 namespace frontend\modules\user\models\forms;
 
 use yii\base\Model;
+use Yii;
 
 /**
  * This is the model for the uploaded picture
@@ -20,7 +21,8 @@ class PictureForm extends Model
         return [
             [['picture'], 'file',
                 'extensions' => ['jpg'],
-                'checkExtensionByMimeType' => true
+                'checkExtensionByMimeType' => true,
+                'maxSize' => Yii::$app->params['maxFileSize'],
             ],
         ];
     }
