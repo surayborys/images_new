@@ -15,6 +15,7 @@ use yii\web\Response;
 
 
 
+
 /**
  * Controller for the user's (frontend\models\User) profile
  */
@@ -238,14 +239,16 @@ class ProfileController extends Controller
     {
         if($this->checkAccessForProfileEdition($id)){
             $user = $this->getUserById($id);
+            $fileToDelete = $user->picture;
             $user->picture = null;
-            if($user->save()){
+            if($user->save(false, ['picture']) && Yii::$app->storage->deleteFile($fileToDelete)){
                 Yii::$app->session->setFlash('success', 'Profile image has been successfully unseted.');
             }
+            
             return $this->redirect(Url::to(['/user/profile/view', 'nickname'=> $user->getNickname()]));
         }
         Yii::$app->session->setFlash('error', 'Enable to unset image');
-        return $this->redirect(Url::to(['/user/profile/view', 'nickname'=> $user->getNickname()]));        
+        return $this->redirect(Url::to('site/index'));        
     }
 }
 

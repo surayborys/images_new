@@ -15,7 +15,7 @@ use dosamigos\fileupload\FileUpload;
 
 ?>
 
-<!--Username, Select picture, Edit profile -->
+<!--Username, Select picture, Unset picture Edit profile -->
 <h1 class="text-center text-primary"><?php echo Html::encode($user->username);?> </h1>
 <div  class="text-center">
     <img src="<?php echo $user->getPicture(); ?>" id="profile-picture" alt="select your profile image" style="border-radius: 50%; width: 175px; height: 175px">
@@ -23,9 +23,13 @@ use dosamigos\fileupload\FileUpload;
         <a href="<?php echo(Url::to(['/user/profile/edit', 'id'=>$user->getId()]))?>">
             <button class="btn btn-danger btn-sm" style="width: 120px">Edit profile</button>
         </a>
+        <!--Display the UNSET PICTURE button only if the profile picture is setted-->
+        <?php if($user->picture):?>
         <a href="<?php echo(Url::to(['/user/profile/unset-picture', 'id'=>$user->getId()]))?>">
             <button class="btn btn-danger btn-sm" style="width: 120px">Unset picture</button>
         </a>
+        <?php endif;?>
+        <!--/PICTURE UNSET BUTTON-->
         <!--FILE UPLOAD BUTTON-->
         <?= FileUpload::widget([
             'model' => $pictureModel,
