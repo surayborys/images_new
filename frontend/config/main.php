@@ -15,6 +15,9 @@ return [
         'user' => [
             'class' => 'frontend\modules\user\Module',
         ],
+        'post' => [
+            'class' => 'frontend\modules\post\Module',
+        ],
     ],
     'components' => [
         'request' => [
@@ -50,6 +53,7 @@ return [
                 'user/profile/unsubscribe/<id:\w+>' =>  'user/profile/unsubscribe',
                 'user/profile/edit/<id:\w+>' => 'user/profile/edit',
                 'user/profile/unset-picture/<id:\w+>' => 'user/profile/unset-picture',
+                'post/<id:\w+>' => 'post/default/view',
             ],
         ],
         'redis' => [

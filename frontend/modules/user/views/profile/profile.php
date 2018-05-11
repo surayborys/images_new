@@ -18,7 +18,7 @@ use dosamigos\fileupload\FileUpload;
 <!--Username, Select picture, Unset picture Edit profile -->
 <h1 class="text-center text-primary"><?php echo Html::encode($user->username);?> </h1>
 <div  class="text-center">
-    <img src="<?php echo $user->getPicture(); ?>" id="profile-picture" alt="select your profile image" style="border-radius: 50%; width: 175px; height: 175px">
+    <img src="<?php echo $user->getPicture(); ?>" id="profile-picture" alt="profile image" style="max-width: 25%; border-radius: 50%"><hr>
     <?php if(!Yii::$app->user->isGuest && $currentUser->getId() == $user->getId()):?>
         <a href="<?php echo(Url::to(['/user/profile/edit', 'id'=>$user->getId()]))?>">
             <button class="btn btn-danger btn-sm" style="width: 120px">Edit profile</button>

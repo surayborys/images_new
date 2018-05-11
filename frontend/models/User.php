@@ -6,6 +6,7 @@ use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use frontend\models\Post;
 
 /**
  * User model
@@ -371,6 +372,24 @@ class User extends ActiveRecord implements IdentityInterface
     public function getPicture()
     {
         return ($this->picture) ? Yii::$app->storage->getFile($this->picture) : Yii::$app->params['defaultProfileImage'];
+    }
+    
+    /**
+     * to check if the user has already liked the post
+     * 
+     * @param frontend\models\Post $post
+     * @return bool
+     */
+    public function isFavourite(Post $post){
+         
+        //initialize redis connection
+        $redis = Yii::$app->redis;
+        
+        //current user's liked posts
+        $redisKeyForUserLikedPosts = 'user:' . $this->id . ':likes'; //the set stores post ids
+        
+        return $redis->sismember($redisKeyForUserLikedPosts, $post->id);
+        
     }
     
 }
