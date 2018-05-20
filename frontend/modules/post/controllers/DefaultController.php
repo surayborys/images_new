@@ -10,6 +10,7 @@ use yii\helpers\Url;
 use frontend\models\Post;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
+use frontend\models\Comment;
 /**
  * Default controller for the `post` module
  */
@@ -102,6 +103,11 @@ class DefaultController extends Controller
         ];
     }
     
+    /**
+     * handles unlike procedure
+     * 
+     * @return mixed|array(JSON)
+     */
     public function actionUnlike(){
         
         if(Yii::$app->user->isGuest) {
@@ -110,6 +116,7 @@ class DefaultController extends Controller
             return $this->redirect(['/user/default/login']);
         }
         
+        //get data, sended with method "POST" from JavaScript
         $postId = Yii::$app->request->post('id');
         /* @var post frontend/models/Post */
         $post = $this->findPostById($postId);
@@ -127,4 +134,98 @@ class DefaultController extends Controller
             'numberOfLikes' => $numberOfLikes,
         ];
     }
+    
+    /**
+     * handles adding comment to the post
+     * 
+     * @return boolean|JSON
+     */
+    public function actionComment()
+    {
+        if(Yii::$app->user->isGuest) {
+             
+            Yii::$app->session->setFlash('danger', 'Please, login to COMMENT the post');
+            return $this->redirect(['/user/default/login']);
+        } 
+        //get data, sended by JavaScript with the "POST" method
+        $text = Yii::$app->request->post('text');
+        $postId = Yii::$app->request->post('postId');
+        /* @var post frontend/models/Post */
+        $post = $this->findPostById($postId);
+        /* @var currentUser frontend/models/User  */
+        $currentUser = Yii::$app->user->identity;
+        
+        if(!$comments = $post->comment($currentUser, $text)){
+            return false;
+        }
+        
+        /*build an array to be transfered as a result*/
+        $authorizedComments = [];
+        foreach ($comments as $comment) {
+            $id = $comment->id;
+            $authorizedComments[$id]['user_id'] = $comment->user_id;
+            $authorizedComments[$id]['post_id'] = $comment->post_id;
+            $authorizedComments[$id]['text'] = $comment->text;
+            $authorizedComments[$id]['authorname'] = $comment->user->username; //comment has one user
+            $authorizedComments[$id]['authorpicture'] = $comment->user->getPicture();
+            $authorizedComments[$id]['id'] = $comment->id;
+            $authorizedComments[$id]['updated_at'] = $comment->updated_at;
+        }
+        
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        
+        return [
+            'success' => true,
+            'numberOfComments' => count($comments),
+            'comments' => $authorizedComments,
+        ];
+    }
+    
+    /**
+     * handles deleting comment 
+     * 
+     * @return mixed
+     */
+    public function actionDeleteComment()
+    {
+        /*get params from the Javascript (transfered by the POST method)*/
+        $postId = Yii::$app->request->post('postId');
+        $commentId = Yii::$app->request->post('commentId');
+        /* @var post frontend/models/Post */
+        $post = $this->findPostById($postId);
+        
+        if(Yii::$app->user->isGuest) {
+             
+            Yii::$app->session->setFlash('danger', 'Please, login to DELETE the post');
+            return $this->redirect(['/user/default/login']);
+        } 
+        
+        if($post->user->id != Yii::$app->user->identity->id) {
+            
+            Yii::$app->session->setFlash('danger', 'non-permitted action!');
+            return $this->redirect(['/']);
+        }
+        
+        /* @var post frontend/models/Comment */
+        $comment = $this->findCommentById($commentId);
+        $postComments = $post->comments;
+        $isCommentOfTransferedPost = false;
+        foreach ($postComments as $postComment) {
+            if($postComment->id == $comment->id){
+                $isCommentOfTransferedPost = true;
+            }
+        }
+        return ($isCommentOfTransferedPost) ? $comment->delete() : $this->redirect(['/']);       
+        
+    }
+    
+    private function findCommentById($id)
+    {
+        if($comment = Comment::findOne($id)){
+           return $comment;
+        }
+        
+        throw new NotFoundHttpException;
+    }
+    
 }

@@ -3,6 +3,7 @@
 namespace frontend\models;
 
 use frontend\models\User;
+use frontend\models\Comment;
 use Yii;
 
 
@@ -84,6 +85,12 @@ class Post extends \yii\db\ActiveRecord
         
     }
     
+    /**
+     * to remove the current user's like from the post $this
+     * 
+     * @param frontend/models/User $user
+     * @return boolean
+     */
     public function unlike(User $user)
     {
         $redisKeyForLikes = 'post:' . $this->id . ':likes'; //the set will store user ids
@@ -96,5 +103,40 @@ class Post extends \yii\db\ActiveRecord
         $redis->srem($redisKeyForUserLikedPosts, $this->id);
         
         return true;
+    }
+    
+    /**
+     * add the comment for the post $this to the "comment" table 
+     * 
+     * @param frontend/models/User $user
+     * @param string $text
+     * @return boolean|array of objects 'frontend/model/Comment'
+     */
+    public function comment(User $user, string $text)
+    {
+        $comment = new Comment();
+        
+        $comment->user_id = $user->id;
+        $comment->post_id = $this->id;
+        $comment->text = $text;
+        
+        if($comment->validate() && $comment->save()){
+            return $this->comments;
+        } else {
+            Yii::$app->session->setFlash('danger', 'Something went wrong. Please, try again');
+            return false;
+        }
+                
+    }
+    
+    /**
+     *  declare linked data for the Post $this
+     *  <p>Post has many comments (frontend/models/Comment) </p>
+     */
+    public function getComments() 
+    {
+        return $this->hasMany(Comment::className(), [
+            'post_id' => 'id',
+        ]);
     }
 }

@@ -36,6 +36,15 @@ body {
     font-style: italic;
 }
 
+/*style for the user imagein comment section*/
+.comment-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    float: left;
+}
+
+
 /* add sorting icons to gridview sort links */
 a.asc:after, a.desc:after {
     position: relative;

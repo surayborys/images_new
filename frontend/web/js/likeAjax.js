@@ -5,9 +5,9 @@
      var $buttonLike = $('#button-like');
      var $buttonUnlike = $('#button-unlike');
      
-    $(function(){ //to handle click on the Like button
+    $(function(){ 
         
-        $buttonLike.click(function(event){
+        $buttonLike.click(function(event){ //to handle click on the Like button
             var params = {
                 'id':$buttonLike.attr('data-id')
             };

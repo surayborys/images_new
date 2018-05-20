@@ -54,6 +54,7 @@ return [
                 'user/profile/edit/<id:\w+>' => 'user/profile/edit',
                 'user/profile/unset-picture/<id:\w+>' => 'user/profile/unset-picture',
                 'post/<id:\w+>' => 'post/default/view',
+                'post/delete/comment/<postId:\w+>/<commentId:\w+>' => 'post/default/delete-comment',
             ],
         ],
         'redis' => [
