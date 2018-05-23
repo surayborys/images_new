@@ -8,7 +8,9 @@
 use Yii;
 use yii\web\JqueryAsset;
 
+const CURRENT_USER_GUEST_NO_ID = 'guest_no_id';
 
+$current_user_id = (Yii::$app->user->isGuest) ? CURRENT_USER_GUEST_NO_ID : Yii::$app->user->identity->id;
 ?>
 
 <div class="text-center">
@@ -67,7 +69,7 @@ use yii\web\JqueryAsset;
                 <form method="post" id="ajax-form">
                     <label for="commentTextarea">Type your comment</label>
                     <textarea class="form-control" id="commentTextarea" rows="4" name="text"></textarea>
-                    <input type="hidden" name="postId" value="<?php echo $post->id?>"
+                    <input type="hidden" name="postId" value="<?php echo $post->id?>">
                     <hr><hr>
                     <button type="button" class="btn btn-default" id="submit-button" data-dismiss="modal">Add comment</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -77,22 +79,55 @@ use yii\web\JqueryAsset;
     </div>
 </div>
 <!-- /Modal comment -->
+<!-- Modal edit comment -->
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabelEdit">Edit</h4>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="ajax-edit-form">
+                    <label for="commentTextarea">Type your comment</label>
+                    <textarea class="form-control" id="commentEditTextarea" rows="4" name="text"></textarea>
+                    <input type="hidden" name="postId" value="<?php echo $post->id?>">
+                    <input id="comment-id-input" type="hidden" name="commentId" value="">
+                    <hr><hr>
+                    <button type="button" class="btn btn-default" id="submit-button-edit" data-dismiss="modal">Edit comment</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Modal edit comment -->
+
 
 <!--comments-->
 <?php 
     $styleOfDeleteButton=(Yii::$app->user->isGuest||Yii::$app->user->identity->id!=$post->user->getId())?'display:none':'';
 ?>
 <div id="comment-section" data-style-delete="<?=$styleOfDeleteButton?>" 
-     data-post-author="<?php echo $post->user->getId();?>">
+     data-post-author="<?php echo $post->user->getId();?>" data-crntuser-id="<?=$current_user_id?>">
     
     <?php foreach ($post->comments as $comment):?>
     <hr>
     <pre id="comment<?php echo $comment->id;?>">
     <img src="<?php echo $comment->user->getPicture();?>" alt="user picture" class="comment-image">
-    <b><?=$comment->user->username?></b> at <?php echo $comment->updated_at?><br><?=$comment->text?> 
+    <b><?=$comment->user->username?></b> at <?php echo $comment->updated_at?><br>
+        <span id="comment-text-<?=$comment->id?>"><?=$comment->text?></span> 
     <a style="<?=$styleOfDeleteButton?>" data-post-id="<?=$post->id?>" data-comment-id="<?=$comment->id?>" class="comment-delete-btn">
         <button class="btn btn-default">Delete</button>
     </a>
+    <?php if($current_user_id != CURRENT_USER_GUEST_NO_ID && $comment->user_id == $current_user_id):?>
+        <a data-post-id="<?=$post->id?>" data-comment-id="<?=$comment->id?>" class="comment-edit-btn">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-default button-edit" id="button-edit" data-toggle="modal" data-target="#myModal2">
+                Edit&nbsp;&nbsp;<span class="glyphicon glyphicon-edit"></span>
+            </button>
+        </a>
+    <?php endif;?>
     </pre>
     <?php endforeach;?>
 </div>

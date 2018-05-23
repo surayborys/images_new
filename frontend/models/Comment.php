@@ -16,6 +16,8 @@ use yii\db\Expression;
  * @property int $post_id
  * @property int $user_id
  * @property string $text
+ * @property int $created_at
+ * @property int $updated_at
  */
 class Comment extends \yii\db\ActiveRecord
 {
@@ -28,7 +30,7 @@ class Comment extends \yii\db\ActiveRecord
         return 'comment';
     }
     
-     public function behaviors()
+    public function behaviors()
     {
         return [
             [

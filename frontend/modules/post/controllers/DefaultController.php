@@ -22,9 +22,7 @@ class DefaultController extends Controller
      */
     public function actionCreate()
     {
-        if(Yii::$app->user->isGuest){
-            return $this->redirect(Url::to('/user/default/login')); 
-        }
+        $this->checkAccess();
         
         $currentUser = Yii::$app->user->identity;
         $model = new PostForm($currentUser);
@@ -79,11 +77,7 @@ class DefaultController extends Controller
      */
     public function actionLike(){
         
-        if(Yii::$app->user->isGuest) {
-             
-            Yii::$app->session->setFlash('danger', 'Please, login to LIKE the post');
-            return $this->redirect(['/user/default/login']);
-        }
+        $this->checkAccess();
         
         $postId = Yii::$app->request->post('id');
         /* @var post frontend/models/Post */
@@ -110,11 +104,7 @@ class DefaultController extends Controller
      */
     public function actionUnlike(){
         
-        if(Yii::$app->user->isGuest) {
-             
-            Yii::$app->session->setFlash('danger', 'Please, login to UNLIKE the post');
-            return $this->redirect(['/user/default/login']);
-        }
+        $this->checkAccess();
         
         //get data, sended with method "POST" from JavaScript
         $postId = Yii::$app->request->post('id');
@@ -142,11 +132,7 @@ class DefaultController extends Controller
      */
     public function actionComment()
     {
-        if(Yii::$app->user->isGuest) {
-             
-            Yii::$app->session->setFlash('danger', 'Please, login to COMMENT the post');
-            return $this->redirect(['/user/default/login']);
-        } 
+        $this->checkAccess(); 
         //get data, sended by JavaScript with the "POST" method
         $text = Yii::$app->request->post('text');
         $postId = Yii::$app->request->post('postId');
@@ -155,21 +141,8 @@ class DefaultController extends Controller
         /* @var currentUser frontend/models/User  */
         $currentUser = Yii::$app->user->identity;
         
-        if(!$comments = $post->comment($currentUser, $text)){
-            return false;
-        }
-        
-        /*build an array to be transfered as a result*/
-        $authorizedComments = [];
-        foreach ($comments as $comment) {
-            $id = $comment->id;
-            $authorizedComments[$id]['user_id'] = $comment->user_id;
-            $authorizedComments[$id]['post_id'] = $comment->post_id;
-            $authorizedComments[$id]['text'] = $comment->text;
-            $authorizedComments[$id]['authorname'] = $comment->user->username; //comment has one user
-            $authorizedComments[$id]['authorpicture'] = $comment->user->getPicture();
-            $authorizedComments[$id]['id'] = $comment->id;
-            $authorizedComments[$id]['updated_at'] = $comment->updated_at;
+        if($post->comment($currentUser, $text)){
+            $comments = $post->prepareCommentsAsArray();
         }
         
         Yii::$app->response->format = Response::FORMAT_JSON;
@@ -177,7 +150,7 @@ class DefaultController extends Controller
         return [
             'success' => true,
             'numberOfComments' => count($comments),
-            'comments' => $authorizedComments,
+            'comments' => $comments,
         ];
     }
     
@@ -194,11 +167,7 @@ class DefaultController extends Controller
         /* @var post frontend/models/Post */
         $post = $this->findPostById($postId);
         
-        if(Yii::$app->user->isGuest) {
-             
-            Yii::$app->session->setFlash('danger', 'Please, login to DELETE the post');
-            return $this->redirect(['/user/default/login']);
-        } 
+        $this->checkAccess();
         
         if($post->user->id != Yii::$app->user->identity->id) {
             
@@ -219,6 +188,50 @@ class DefaultController extends Controller
         
     }
     
+    /**
+     * handles comment edition 
+     * 
+     * @return boolean|JSON
+     */
+    public function actionEditComment()
+    {
+        $this->checkAccess();
+        //get data, sended by JavaScript with the "POST" method
+        $text = Yii::$app->request->post('text');
+        $postId = Yii::$app->request->post('postId');
+        $commentId = Yii::$app->request->post('commentId');
+        
+        /* @var post frontend/models/Post */
+        $post = $this->findPostById($postId);
+        /* @var post frontend/models/Post */
+        $comment = $this->findCommentById($commentId);
+        /* @var currentUser frontend/models/User  */
+        $currentUser = Yii::$app->user->identity;
+        
+        if($comment->user_id != $currentUser->id) {
+            Yii::$app->session->setFlash('danger', 'non-permitted action!');
+            return $this->redirect(['/']);
+        }
+        
+        $comment->text = $text;
+        if($comment->validate()&& $comment->update()){
+            $comments = $post->prepareCommentsAsArray();
+        } else { return false; }
+        
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        
+        return [ 'success' => true,
+                 'numberOfComments' => count($comments),
+                 'comments' => $comments, ];
+    }
+    
+    /**
+     * find a record in the 'comment' table by it's id
+     * 
+     * @param integer $id
+     * @return $post frontend\models\Comment Object;
+     * @throws NotFoundHttpException
+     */
     private function findCommentById($id)
     {
         if($comment = Comment::findOne($id)){
@@ -226,6 +239,19 @@ class DefaultController extends Controller
         }
         
         throw new NotFoundHttpException;
+    }
+    
+    /**
+     * redirect to login page, if the user is not logged in
+     * @return mixed
+     */
+    private function checkAccess()
+    {
+        if(Yii::$app->user->isGuest) {
+             
+            Yii::$app->session->setFlash('danger', 'Please, login to continue');
+            return $this->redirect(['/user/default/login']);
+        }
     }
     
 }

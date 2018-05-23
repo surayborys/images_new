@@ -120,13 +120,7 @@ class Post extends \yii\db\ActiveRecord
         $comment->post_id = $this->id;
         $comment->text = $text;
         
-        if($comment->validate() && $comment->save()){
-            return $this->comments;
-        } else {
-            Yii::$app->session->setFlash('danger', 'Something went wrong. Please, try again');
-            return false;
-        }
-                
+        return ($comment->validate() && $comment->save()) ? true : false;   
     }
     
     /**
@@ -138,5 +132,30 @@ class Post extends \yii\db\ActiveRecord
         return $this->hasMany(Comment::className(), [
             'post_id' => 'id',
         ]);
+    }
+    
+    /**
+     * to build an array of current post $this comments
+     * 
+     * @return array
+     */
+    public function prepareCommentsAsArray()
+    {
+        $comments = $this->comments; //$post has many comments
+        
+        /*build an array to be transfered as a result*/
+        $preparedComments = [];
+        foreach ($comments as $comment) {
+            $id = $comment->id;
+            $preparedComments[$id]['user_id'] = $comment->user_id;
+            $preparedComments[$id]['post_id'] = $comment->post_id;
+            $preparedComments[$id]['text'] = $comment->text;
+            $preparedComments[$id]['authorname'] = $comment->user->username; //comment has one user
+            $preparedComments[$id]['authorpicture'] = $comment->user->getPicture();
+            $preparedComments[$id]['id'] = $comment->id;
+            $preparedComments[$id]['updated_at'] = $comment->updated_at;
+        }
+        
+        return $preparedComments;
     }
 }
