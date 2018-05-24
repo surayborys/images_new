@@ -40,6 +40,7 @@ AppAsset::register($this);
     if (!Yii::$app->user->isGuest){
         $menuItems = [
             ['label' => 'My page', 'url' => Url::to(['/user/profile/view', 'nickname'=> Yii::$app->user->identity->getNickname()])],
+            ['label' => 'Create post', 'url' => Url::to(['/post/default/create'])]
         ];
     }
     if (Yii::$app->user->isGuest) {

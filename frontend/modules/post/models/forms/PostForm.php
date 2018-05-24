@@ -6,6 +6,7 @@ use yii\base\Model;
 use Yii;
 use frontend\models\User;
 use frontend\models\Post;
+use Intervention\Image\ImageManager;
 
 /**
  * Form model for adding a new post
@@ -23,10 +24,12 @@ class PostForm extends Model{
     
     /**
      * to save the frontend\models\User Object in the private property $user
+     * to use the self::EVENT_AFTER_VALIDATE event for resizing post picture
      * @param User $user
      */
     public function __construct(User $user) {
         $this->user = $user;
+        $this->on(self::EVENT_AFTER_VALIDATE, [$this, 'resizePicture']);
     }
     
     public function rules() {
@@ -63,5 +66,33 @@ class PostForm extends Model{
     private function getMaxFileSize(){
         return Yii::$app->params['maxFileSize'];
     }
+    
+    /**
+     * handles picture resizing, if it's size is larger than setted params 
+     * <p>use InterventionImage library  http://image.intervention.io/</p>
+     * @return mixed
+     */
+    public function resizePicture(){
+        
+        if($this->picture->error){
+            /*the UploadedFile object has the error property. If $error contains '1'
+              it means that an error has been occured, and we have to stop script execution*/
+            return;
+        }
+        $maxHeight = Yii::$app->params['postPicture']['maxHeight'];
+        $maxWidth = Yii::$app->params['postPicture']['maxWidth'];
+        
+        $manager = new ImageManager(array('driver' => 'imagick'));
+       
+        $image = $manager->make($this->picture->tempName);
+        
+        //the third argument is optional and use callback function constraint
+        $image->resize($maxWidth, $maxHeight, function ($constraint) {
+            //save aspect ration
+            $constraint->aspectRatio();
+            //don't resize image, if it's height and width is smaller, than $maxWidth, $maxHeight
+            $constraint->upsize();
+        })->save();
+   }
     
 }
