@@ -7,6 +7,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 use frontend\models\Post;
+use frontend\models\Feed;
 
 /**
  * User model
@@ -392,4 +393,27 @@ class User extends ActiveRecord implements IdentityInterface
         
     }
     
+    
+    /**
+     * @param integer $limit limits a number of posts for displaying
+     *  
+     * declare linked data for the User $this int the 'feed' table
+     *  <p>User has many feeds (frontend\models\Feed) </p>
+     */
+    public function getFeeds(int $limit) 
+    {
+        $order = ['post_created_at' => SORT_DESC];
+        return $this->hasMany(Feed::className(), ['user_id' => 'id',])->orderBy($order)->limit($limit)->all();
+    }
+    
+    /**
+     * get linked data for the User $this in the 'post' table
+     * <p>User has many posts (frontend\models\Post) </p>
+     * 
+     * @return array[] frontend\models\Post
+     */
+    public function getPosts()
+    {
+        return $this->hasMany(Post::className(), ['user_id' => 'id']);
+    }
 }

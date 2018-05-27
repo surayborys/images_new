@@ -7,6 +7,8 @@ use Yii;
 use frontend\models\User;
 use frontend\models\Post;
 use Intervention\Image\ImageManager;
+use frontend\models\events\PostCreatedEvent;
+
 
 /**
  * Form model for adding a new post
@@ -16,6 +18,7 @@ use Intervention\Image\ImageManager;
 class PostForm extends Model{
     
     const MAX_DESCRIPTION_LENGTH = 1500;
+    const EVENT_POST_CREATED = 'post_created';
     
     public $picture;
     public $description;
@@ -30,6 +33,7 @@ class PostForm extends Model{
     public function __construct(User $user) {
         $this->user = $user;
         $this->on(self::EVENT_AFTER_VALIDATE, [$this, 'resizePicture']);
+        $this->on(self::EVENT_POST_CREATED, [Yii::$app->feedService, 'addToFeeds']);
     }
     
     public function rules() {
@@ -55,7 +59,18 @@ class PostForm extends Model{
             $post->filename = Yii::$app->storage->saveUploadedFile($this->picture);
             $post->created_at = time();
             $post->description = $this->description;
-            return $post->save(false);
+            
+            if($post->save(false)) {
+                
+                $event = new PostCreatedEvent();
+                $event->user = $this->user;
+                $event->post = $post;
+                
+                $this->trigger(self::EVENT_POST_CREATED, $event);
+                return true;
+            }
+            
+            return false;
         }
     }
 

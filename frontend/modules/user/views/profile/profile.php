@@ -161,3 +161,27 @@ use dosamigos\fileupload\FileUpload;
     </div>
 </div>
 <!-- Modal followers -->
+
+<!--User's posts-->
+<hr>
+<div class="col-md-12 text-center">
+    <?php if($posts=$user->posts):?>
+        <?php foreach ($posts as $post): ?>
+        <?php /*@var $post frontend\models\Post*/?>            
+            <a href="<?=Url::to(['/post/default/view', 'id' => $post->id])?>">
+                <img src="<?php echo Yii::$app->storage->getFile($post->filename); ?>" style="max-width: 75%" /> 
+            </a>
+            <div class="col-md-12">
+                <?php echo HtmlPurifier::process($post->description); ?>
+            </div>                
+
+            <div class="col-md-12">
+                <?php echo Yii::$app->formatter->asDatetime($post->created_at); ?>
+            </div>
+        <div class="col-md-12"><hr></div>
+        <?php endforeach;?>
+    <?php else:?>
+        <p class="text-center">No posts yet :(</p>
+    <?php endif;?>
+</div>
+<!--/User's posts-->

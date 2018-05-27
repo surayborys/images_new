@@ -18,4 +18,6 @@ return [
         'maxWidth' => 1280,
         'maxHeight' => 1024,
     ],
+    
+    'feedLimit' => 200,
 ];

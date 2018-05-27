@@ -120,7 +120,15 @@ class Post extends \yii\db\ActiveRecord
         $comment->post_id = $this->id;
         $comment->text = $text;
         
-        return ($comment->validate() && $comment->save()) ? true : false;   
+        if($comment->validate() && $comment->save()) {
+            $redis = Yii::$app->redis;
+            $key = 'post:'. $this->id.':comments';
+            $redis->incr($key);
+            
+            return true;
+        }
+        
+        return false;  
     }
     
     /**
@@ -157,5 +165,9 @@ class Post extends \yii\db\ActiveRecord
         }
         
         return $preparedComments;
+    }
+    
+    public function getId(){
+        return $this->getPrimaryKey();
     }
 }

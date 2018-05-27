@@ -43,6 +43,7 @@ class ProfileController extends Controller
             'subscriptions' => $subscriptions,
             'currentUser' => $currentUser,
             'pictureModel' => $pictureModel,
+            
         ]);
     }
     

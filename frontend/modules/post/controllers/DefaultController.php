@@ -11,6 +11,7 @@ use frontend\models\Post;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use frontend\models\Comment;
+
 /**
  * Default controller for the `post` module
  */
