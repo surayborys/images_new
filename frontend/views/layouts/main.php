@@ -117,7 +117,7 @@ FontAwesomeAsset::register($this);
             <div class="back-to-top-page">
                 <a class="back-to-top"><i class="fa fa-angle-double-up"></i></a>
             </div>
-            <p class="text">Images | 2018</p>
+            <p class="text">Images | <?=date('Y');?></p>
         </div>
     </footer>
         <!-----------------------------------------/FOOTER-------------------------------------->

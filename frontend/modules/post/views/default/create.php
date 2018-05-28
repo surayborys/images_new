@@ -16,3 +16,4 @@ use yii\widgets\ActiveForm;
     <?php echo $form->field($model, 'description')->textarea();?>
     <?php echo Html::submitButton('Create');?>
 <?php ActiveForm::end();?>
+<br>
