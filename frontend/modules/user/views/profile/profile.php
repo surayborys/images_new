@@ -15,97 +15,138 @@ use dosamigos\fileupload\FileUpload;
 
 ?>
 
-<!--Username, Select picture, Unset picture Edit profile -->
-<h1 class="text-center text-primary"><?php echo Html::encode($user->username);?> </h1>
-<div  class="text-center">
-    <img src="<?php echo $user->getPicture(); ?>" id="profile-picture" alt="profile image" style="max-width: 25%; border-radius: 50%"><hr>
-    <?php if(!Yii::$app->user->isGuest && $currentUser->getId() == $user->getId()):?>
-        <a href="<?php echo(Url::to(['/user/profile/edit', 'id'=>$user->getId()]))?>">
-            <button class="btn btn-danger btn-sm" style="width: 120px">Edit profile</button>
-        </a>
-        <!--Display the UNSET PICTURE button only if the profile picture is setted-->
-        <?php if($user->picture):?>
-        <a href="<?php echo(Url::to(['/user/profile/unset-picture', 'id'=>$user->getId()]))?>">
-            <button class="btn btn-danger btn-sm" style="width: 120px">Unset picture</button>
-        </a>
-        <?php endif;?>
-        <!--/PICTURE UNSET BUTTON-->
-        <!--FILE UPLOAD BUTTON-->
-        <?= FileUpload::widget([
-            'model' => $pictureModel,
-            'attribute' => 'picture',
-            'url' => ['/user/profile/upload-picture'], // your url, this is just for demo purposes,
-            'options' => ['accept' => 'image/*'],
-            // Also, you can specify jQuery-File-Upload events
-            // see: https://github.com/blueimp/jQuery-File-Upload/wiki/Options#processing-callback-options
-            'clientEvents' => [
-                'fileuploaddone' => 'function(e, data) {
-                    if(data.result.success){
-                        $("#profile-image-success").show();
-                        $("#profile-image-fail").hide();
-                        $("#profile-picture").attr("src", data.result.pictureUri);
-                    }else{
-                        $("#profile-image-success").hide();
-                        $("#profile-image-fail").html(data.result.errors.picture).show();
-                    }
-                }',
-            ],
-        ]); ?>
-        <!--/FILE UPLOAD BUTTON-->
-    <?php endif;?>
+<div class="page-posts no-padding">
+    <div class="row">
+        <div class="page page-post col-sm-12 col-xs-12 post-82">
+
+
+            <div class="blog-posts blog-posts-large">
+
+                <div class="row">
+
+                    <!-- profile -->
+                    <article class="profile col-sm-12 col-xs-12">                                            
+                        <div class="profile-title">
+                            <img src="<?php echo $user->getPicture(); ?>" class="author-image" id="profile-picture" alt="profile image" />
+                            <div class="author-name"><?php echo Html::encode($user->username);?></div>
+                            
+                            <?php if(!Yii::$app->user->isGuest && $currentUser->getId() == $user->getId()):?>
+                            <a href="<?php echo(Url::to(['/user/profile/edit', 'id'=>$user->getId()]))?>">
+                                <button class="btn btn-default btn-sm" style="width: 120px">Edit profile</button>
+                            </a>
+                                <!--Display the UNSET PICTURE button only if the profile picture is setted-->
+                                <?php if($user->picture):?>
+                                <a href="<?php echo(Url::to(['/user/profile/unset-picture', 'id'=>$user->getId()]))?>">
+                                    <button class="btn btn-default btn-sm" style="width: 120px">Unset picture</button>
+                                </a>
+                                <?php endif;?>
+                                <!--/PICTURE UNSET BUTTON-->
+                            <!--FILE UPLOAD BUTTON-->
+                            <?= FileUpload::widget([
+                                'model' => $pictureModel,
+                                'attribute' => 'picture',
+                                'url' => ['/user/profile/upload-picture'], // your url, this is just for demo purposes,
+                                'options' => ['accept' => 'image/*'],
+                                // Also, you can specify jQuery-File-Upload events
+                                // see: https://github.com/blueimp/jQuery-File-Upload/wiki/Options#processing-callback-options
+                                'clientEvents' => [
+                                    'fileuploaddone' => 'function(e, data) {
+                                        if(data.result.success){
+                                            $("#profile-image-success").show();
+                                            $("#profile-image-fail").hide();
+                                            $("#profile-picture").attr("src", data.result.pictureUri);
+                                        }else{
+                                            $("#profile-image-success").hide();
+                                            $("#profile-image-fail").html(data.result.errors.picture).show();
+                                        }
+                                    }',
+                                ],
+                            ]); ?>
+                            <!--/FILE UPLOAD BUTTON-->
+                            <?php endif;?>
+                            
+                            
+                        </div>
+                        <br>
+                        <div class="alert alert-success" id="profile-image-success" style="display: none">Profile succesfully updated</div>
+                        <div class="alert alert-danger" id="profile-image-fail" style="display: none"></div>
+                        
+                        <?php if($user->about):?>
+                        <div class="profile-description">
+                            <p><?php echo HtmlPurifier::process($user->about);?></p>
+                        </div>
+                        <?php endif;?>
+                        
+                        <!--SUBSCRIBE AND UNSUBSCRIBE BUTTONS-->
+                        <!--Dont show the subscribe and unsubscribe buttons on the current user's page-->
+                        <?php if(Yii::$app->user->isGuest || $currentUser->getId() != $user->getId()):?>
+                        <h2 class="text-center">
+                            <!--Show only subscribe button for guest or if the current user(Yii::$app->user->identity)
+                            hasn't yet followed by user $user -->
+                            <?php if(Yii::$app->user->isGuest || $currentUser->checkIfFollowsBy($user) == false):?>
+                                <a href="<?php echo(Url::to(['/user/profile/follow', 'id'=>$user->getId()]))?>">
+                                    <button class="btn btn-primary" style="width: 120px">Subscribe</button>
+                                </a>
+                            <!--Show only unsubscribe button if the current user has followed by the user $user-->
+                            <?php elseif($currentUser->checkIfFollowsBy($user) == true):?> 
+                            <a href="<?php echo(Url::to(['/user/profile/unsubscribe', 'id'=>$user->getId()]))?>">
+                                <button class="btn btn-primary" style="width: 120px">Unsubscribe</button>
+                            </a> 
+                            <?php endif;?>
+                        </h2>
+                        <?php endif; ?>
+                        <hr>
+                        
+                        <!--Show the 'FRIENS, WHO ARE ALSO FOLLOWING' block only for logged users if they are-->
+                        <div>
+                            <?php if(!Yii::$app->user->isGuest && count($mutualFollowers = $currentUser->getMutualSubscriptionsTo($user))>0): ?>
+                            <h5>Friends, who're also following:</h5>
+                                <?php foreach ($mutualFollowers as $mutualFollower):?>
+                                    <a href="<?php echo Url::to(['/user/profile/view', 'nickname' => ($mutualFollower['nickname']) ? $mutualFollower['nickname'] : ($mutualFollower['id'])]);?>">
+                                                        <?php echo $mutualFollower['username'] ;?>
+                                    </a><br>
+                                <?php endforeach;?>
+                            <?php endif;?>
+                            <hr>
+                        </div>
+                        <!-- /FRIENS, WHO ARE ALSO FOLLOWING-->
+                        <div class="profile-bottom">
+                            <div class="profile-post-count">
+                                <span><?=$user->countPosts();?>&nbsp;<?php echo ($user->countPosts()==1)?'post':'posts'?></span>
+                            </div>
+                            <div class="profile-followers">
+                                <a href="#" data-toggle="modal" data-target="#myModal1"><?php echo $user->countSubscriptions(); ?>&nbsp;following</a>
+                            </div>
+                            <div class="profile-following">
+                                <a href="#" data-toggle="modal" data-target="#myModal2"><?php echo $user->countFollowers(); ?>&nbsp;followers</a>    
+                            </div>
+                        </div>
+                    </article>
+
+                    <div class="col-sm-12 col-xs-12">
+                        <div class="row profile-posts">
+                             <?php if($posts=$user->posts):?>
+                                <?php foreach ($posts as $post): ?>
+                                <?php /*@var $post frontend\models\Post*/?>
+                            <div class="col-md-4 profile-post">
+                                <a href="<?=Url::to(['/post/default/view', 'id' => $post->id])?>">
+                                    <img src="<?php echo Yii::$app->storage->getFile($post->filename); ?>" class="author-image" /> 
+                                </a>
+                            </div>
+                                <?php endforeach;?>
+                            <?php else:?>
+                                <p class="text-center">No posts yet :(</p>
+                            <?php endif;?>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div class="alert alert-success" id="profile-image-success" style="display: none">Profile succesfully updated</div>
-<div class="alert alert-danger" id="profile-image-fail" style="display: none"></div>
-<p><?php echo HtmlPurifier::process($user->about);?></p>
 
-<!--/Username-->
 
-<!--SUBSCRIBE AND UNSUBSCRIBE BUTTONS-->
-<!--Dont show the subscribe and unsubscribe buttons on the current user's page-->
-<?php if(Yii::$app->user->isGuest || $currentUser->getId() != $user->getId()):?>
-<h2 class="text-center">
-    <!--Show only subscribe button for guest or if the current user(Yii::$app->user->identity)
-    hasn't yet followed by user $user -->
-    <?php if(Yii::$app->user->isGuest || $currentUser->checkIfFollowsBy($user) == false):?>
-        <a href="<?php echo(Url::to(['/user/profile/follow', 'id'=>$user->getId()]))?>">
-            <button class="btn btn-primary" style="width: 120px">Subscribe</button>
-        </a>
-    <!--Show only unsubscribe button if the current user has followed by the user $user-->
-    <?php elseif($currentUser->checkIfFollowsBy($user) == true):?> 
-    <a href="<?php echo(Url::to(['/user/profile/unsubscribe', 'id'=>$user->getId()]))?>">
-        <button class="btn btn-primary" style="width: 120px">Unsubscribe</button>
-    </a> 
-    <?php endif;?>
-</h2>
-<?php endif; ?>
-<hr>
-<!--/SUBSCRIBE AND UNSUBSCRIBE BUTTONS-->
-
-<!--Show the 'FRIENS, WHO ARE ALSO FOLLOWING' block only for logged users if they are-->
-<div>
-    <?php if(!Yii::$app->user->isGuest && count($mutualFollowers = $currentUser->getMutualSubscriptionsTo($user))>0): ?>
-    <h5>Friends, who're also following:</h5>
-        <?php foreach ($mutualFollowers as $mutualFollower):?>
-            <a href="<?php echo Url::to(['/user/profile/view', 'nickname' => ($mutualFollower['nickname']) ? $mutualFollower['nickname'] : ($mutualFollower['id'])]);?>">
-                                <?php echo $mutualFollower['username'] ;?>
-            </a><br>
-        <?php endforeach;?>
-    <?php endif;?>
-    <hr>
-</div>
-<!-- /FRIENS, WHO ARE ALSO FOLLOWING-->
-
-<h2 class="text-center">
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal1">
-        Subscriptions: <?php echo $user->countSubscriptions(); ?>
-    </button>
-
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal2">
-        Followers: <?php echo $user->countFollowers(); ?>
-    </button>
-</h2>
 
 
 <!-- Modal subscriptions -->
@@ -162,26 +203,3 @@ use dosamigos\fileupload\FileUpload;
 </div>
 <!-- Modal followers -->
 
-<!--User's posts-->
-<hr>
-<div class="col-md-12 text-center">
-    <?php if($posts=$user->posts):?>
-        <?php foreach ($posts as $post): ?>
-        <?php /*@var $post frontend\models\Post*/?>            
-            <a href="<?=Url::to(['/post/default/view', 'id' => $post->id])?>">
-                <img src="<?php echo Yii::$app->storage->getFile($post->filename); ?>" style="max-width: 75%" /> 
-            </a>
-            <div class="col-md-12">
-                <?php echo HtmlPurifier::process($post->description); ?>
-            </div>                
-
-            <div class="col-md-12">
-                <?php echo Yii::$app->formatter->asDatetime($post->created_at); ?>
-            </div>
-        <div class="col-md-12"><hr></div>
-        <?php endforeach;?>
-    <?php else:?>
-        <p class="text-center">No posts yet :(</p>
-    <?php endif;?>
-</div>
-<!--/User's posts-->
