@@ -4,6 +4,8 @@ namespace frontend\models;
 
 use frontend\models\User;
 use frontend\models\Comment;
+use yii\helpers\HtmlPurifier;
+use yii\helpers\Html;
 use Yii;
 
 
@@ -157,11 +159,12 @@ class Post extends \yii\db\ActiveRecord
             $id = $comment->id;
             $preparedComments[$id]['user_id'] = $comment->user_id;
             $preparedComments[$id]['post_id'] = $comment->post_id;
-            $preparedComments[$id]['text'] = $comment->text;
-            $preparedComments[$id]['authorname'] = $comment->user->username; //comment has one user
+            $preparedComments[$id]['text'] = HtmlPurifier::process($comment->text);
+            $preparedComments[$id]['authorname'] = Html::encode($comment->user->username); //comment has one user
             $preparedComments[$id]['authorpicture'] = $comment->user->getPicture();
             $preparedComments[$id]['id'] = $comment->id;
-            $preparedComments[$id]['updated_at'] = $comment->updated_at;
+            $preparedComments[$id]['updated_at'] = Yii::$app->formatter->asDatetime($comment->updated_at);
+            $preparedComments[$id]['authornickname'] = Html::encode($comment->user->getNickname());
         }
         
         return $preparedComments;
@@ -169,5 +172,17 @@ class Post extends \yii\db\ActiveRecord
     
     public function getId(){
         return $this->getPrimaryKey();
+    }
+    
+    /**
+     * count number of comments of the post using redis set with the key 'post:post_id:comments'
+     * @return integer
+     */
+    public function getNumberOfComments()
+    {
+        $redis = Yii::$app->redis;
+        $key = 'post:'. $this->id .':comments';
+        
+        return ($redis->get($key)>0)?$redis->get($key):0;
     }
 }

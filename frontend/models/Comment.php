@@ -22,6 +22,8 @@ use yii\db\Expression;
 class Comment extends \yii\db\ActiveRecord
 {
     const MAX_COMMENT_LENGTH = 2000;
+    const MIN_COMMENT_LENGTH = 1;
+
     /**
      * @inheritdoc
      */
@@ -50,9 +52,9 @@ class Comment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['post_id', 'user_id'], 'required'],
+            [['post_id', 'user_id', 'text'], 'required'],
             [['post_id', 'user_id'], 'integer'],
-            [['text'], 'string', 'max' => self::MAX_COMMENT_LENGTH],
+            [['text'], 'string', 'max' => self::MAX_COMMENT_LENGTH, 'min' => self::MIN_COMMENT_LENGTH],
         ];
     }
 

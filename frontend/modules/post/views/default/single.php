@@ -7,57 +7,145 @@
 
 use Yii;
 use yii\web\JqueryAsset;
+use yii\helpers\HtmlPurifier;
+use yii\helpers\Html;
+use yii\helpers\Url;
+
 
 const CURRENT_USER_GUEST_NO_ID = 'guest_no_id';
 
 $current_user_id = (Yii::$app->user->isGuest) ? CURRENT_USER_GUEST_NO_ID : Yii::$app->user->identity->id;
 ?>
 
-<div class="text-center">
-    <?php echo $post->user->username ?? 'Unknown user'; ?>
-    <hr>
-    <img src="<?php echo Yii::$app->storage->getFile($post->filename); ?>" alt="single post image"  style="max-width: 75%"/>
-    <br>
-    Likes <span id="likes-number">(<?=$post->countLikes();?>)</span>
-    <hr>
-    <div class="col-md-12">
-        
-        <?php /*describe Like-Unlike buttons default displaying options*/
-            if(Yii::$app->user->isGuest || !Yii::$app->user->identity->isFavourite($post)) {
-                $unlikeDisplay = 'none';
-                $likeDisplay = '';
-            } 
-            else {
-                $unlikeDisplay = '';
-                $likeDisplay = 'none';
-            }
-        ?>
-        
-        <a href="#" class="btn btn-primary button-like" id="button-like" data-id="<?php echo $post->id;?>" style="display: <?=$likeDisplay?>">
-            Like&nbsp;&nbsp;
-            <span class="glyphicon glyphicon-thumbs-up"></span>
-        </a>
-        
-        
-        <a href="#" class="btn btn-primary button-like" id="button-unlike" data-id="<?php echo $post->id;?>" style="display: <?=$unlikeDisplay?>">
-            Unlike&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-down"></span>
-        </a>
-        
-        <!--comment button-->
-        <h2 class="text-center">
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary button-comment" id="button-comment" data-toggle="modal" data-target="#myModal1">
-                Comment&nbsp;&nbsp;<span class="glyphicon glyphicon-comment"></span>
-            </button>
-        </h2>
-        <!--/comment button-->
+<div class="page-posts no-padding">
+    <div class="row">
+        <div class="page page-post col-sm-12 col-xs-12 post-82">
+            <div class="blog-posts blog-posts-large">
+                <div class="row">
+<!----------------------------------------------POST--------------------------------------------------------------->
+                    <article class="post col-sm-12 col-xs-12">                                            
+                        <div class="post-meta">
+                            <div class="post-title">
+                                <img src="<?php echo $post->user->getPicture();?>" class="author-image" />
+                                <div class="author-name"><a href="#"><?php echo Html::encode($post->user->username);?></a></div>
+                            </div>
+                        </div>
+                        <div class="post-type-image">
+                            <a href="#">
+                                <img src="<?php echo Yii::$app->storage->getFile($post->filename); ?>" alt="post">
+                            </a>
+                        </div>
+                        <br>
+                        <?php if($post->description):?>
+                        <div class="post-description">
+                            <p><?php echo HtmlPurifier::process($post->description);?></p>
+                        <?php endif;?>
+                        <div class="post-bottom">
+                            <div class="post-likes">
+                                <a href="#" class="btn btn-secondary"><i class="fa fa-lg fa-heart-o"></i></a>
+                                <span id="likes-number"><?=$post->countLikes();?></span>
+                            </div>
+                            <?php /*describe Like-Unlike buttons default displaying options*/
+                                if(Yii::$app->user->isGuest || !Yii::$app->user->identity->isFavourite($post)) {
+                                    $unlikeDisplay = 'none';
+                                    $likeDisplay = '';
+                                } 
+                                else {
+                                    $unlikeDisplay = '';
+                                    $likeDisplay = 'none';
+                                }
+                            ?>
+                            &nbsp;&nbsp;
+                            <a href="#" class="btn btn-default button-like" id="button-like" data-id="<?php echo $post->id;?>" style="display: <?=$likeDisplay?>">
+                                Like&nbsp;&nbsp;
+                                <span class="glyphicon glyphicon-thumbs-up"></span>
+                            </a>
+
+
+                            <a href="#" class="btn btn-default button-like" id="button-unlike" data-id="<?php echo $post->id;?>" style="display: <?=$unlikeDisplay?>">
+                                Unlike&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-down"></span>
+                            </a>
+                            <div class="post-comments">
+                                <a>
+                                    <span id="number-of-comments"><?=$post->getNumberOfComments()?></span>&nbsp;<?=($post->getNumberOfComments()==1)?'comment':'comments'?>
+                                </a>
+
+                            </div>
+                            <div class="post-date">
+                                <span><?php echo Yii::$app->formatter->asDatetime($post->created_at); ?></span>    
+                            </div>
+                            <div class="post-report">
+                                <button type="button" class="btn btn-info button-comment" id="button-comment" data-toggle="modal" data-target="#myModal1">
+                                    Comment post&nbsp;&nbsp;<span class="glyphicon glyphicon-comment"></span>
+                                </button>   
+                            </div>                                
+                        </div>
+                    </article>
+<!----------------------------------------------/POST--------------------------------------------------------------->
+<!----------------------------------------------COMMENTS------------------------------------------------------------>
+
+
+                    <div class="col-sm-12 col-xs-12">
+                        <?php 
+                            $styleOfDeleteButton=(Yii::$app->user->isGuest||Yii::$app->user->identity->id!=$post->user->getId())?'display:none':'';
+                        ?>
+                        <div id="comment-section" data-style-delete="<?=$styleOfDeleteButton?>" 
+                             data-post-author="<?php echo $post->user->getId();?>" data-crntuser-id="<?=$current_user_id?>">
+
+                            <div class="comments-post">
+                                <div class="row">
+                                    <ul class="comment-list" id="comment-list-ul">
+
+                                        <?php foreach ($post->comments as $comment):?>
+                                            <!-- comment item -->
+                                            <li class="comment" id="comment<?php echo $comment->id;?>">
+                                                <div class="comment-user-image">
+                                                    <img src="<?php echo $comment->user->getPicture();?>" class="comment-image">
+                                                </div>
+                                                <div class="comment-info">
+                                                    <h4 class="author">
+                                                        <a href="<?php echo Url::to(['/user/profile/view', 'nickname' => $comment->user->getNickname()]); ?>">
+                                                        <?= Html::encode($comment->user->username)?>
+                                                        </a> 
+                                                        <span><?php echo Yii::$app->formatter->asDatetime($comment->updated_at); ?></span>
+                                                    </h4>
+                                                    <p id="comment-text-<?=$comment->id?>"><?=HtmlPurifier::process($comment->text);?></p>
+                                                    
+                                                    <?php if($current_user_id != CURRENT_USER_GUEST_NO_ID && $comment->user_id == $current_user_id):?>
+                                                        <a data-post-id="<?=$post->id?>" data-comment-id="<?=$comment->id?>" class="comment-edit-btn">
+                                                                <!-- Button trigger modal -->
+                                                                <button type="button" class="btn btn-default button-edit" id="button-edit" data-toggle="modal" data-target="#myModal2">
+                                                                    Edit&nbsp;&nbsp;<span class="glyphicon glyphicon-edit"></span>
+                                                                </button>
+                                                        </a>&nbsp;
+                                                    <?php endif;?>
+                                                    <a style="<?=$styleOfDeleteButton?>" data-post-id="<?=$post->id?>" data-comment-id="<?=$comment->id?>" class="comment-delete-btn">
+                                                        <button class="btn btn-default">Delete</button>
+                                                    </a>
+                                                </div>
+                                            </li>
+                                            <!-- comment item -->
+                                        <?php endforeach;?>
+                                    </ul>
+                                </div>
+
+                            </div>  
+                        </div>
+                    </div>
+<!---------------------------------------------/COMMENTS------------------------------------------------------------>
+
+                </div>
+            </div>
+        </div>
     </div>
-    <br>
-    <hr>
-        <?php echo $post->description; ?>
 </div>
 
-<!-- Modal comment -->
+
+
+
+
+ <!----------------------------------------------MODAL COMMENTS--------------------------------------------------->
+
 <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -101,37 +189,10 @@ $current_user_id = (Yii::$app->user->isGuest) ? CURRENT_USER_GUEST_NO_ID : Yii::
         </div>
     </div>
 </div>
-<!-- /Modal edit comment -->
+ <!----------------------------------------------/MODAL COMMENTS----------------------------------------------------->
 
+ <!----------------------------------------------REGISTER JS FILES--------------------------------------------------->
 
-<!--comments-->
-<?php 
-    $styleOfDeleteButton=(Yii::$app->user->isGuest||Yii::$app->user->identity->id!=$post->user->getId())?'display:none':'';
-?>
-<div id="comment-section" data-style-delete="<?=$styleOfDeleteButton?>" 
-     data-post-author="<?php echo $post->user->getId();?>" data-crntuser-id="<?=$current_user_id?>">
-    
-    <?php foreach ($post->comments as $comment):?>
-    <hr>
-    <pre id="comment<?php echo $comment->id;?>">
-    <img src="<?php echo $comment->user->getPicture();?>" alt="user picture" class="comment-image">
-    <b><?=$comment->user->username?></b> at <?php echo $comment->updated_at?><br>
-        <span id="comment-text-<?=$comment->id?>"><?=$comment->text?></span> 
-    <a style="<?=$styleOfDeleteButton?>" data-post-id="<?=$post->id?>" data-comment-id="<?=$comment->id?>" class="comment-delete-btn">
-        <button class="btn btn-default">Delete</button>
-    </a>
-    <?php if($current_user_id != CURRENT_USER_GUEST_NO_ID && $comment->user_id == $current_user_id):?>
-        <a data-post-id="<?=$post->id?>" data-comment-id="<?=$comment->id?>" class="comment-edit-btn">
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-default button-edit" id="button-edit" data-toggle="modal" data-target="#myModal2">
-                Edit&nbsp;&nbsp;<span class="glyphicon glyphicon-edit"></span>
-            </button>
-        </a>
-    <?php endif;?>
-    </pre>
-    <?php endforeach;?>
-</div>
-<!--/comments-->
 
 <?php $this->registerJsFile('@web/js/likeAjax.js', [
     'depends' => JqueryAsset::className(),
@@ -139,4 +200,5 @@ $current_user_id = (Yii::$app->user->isGuest) ? CURRENT_USER_GUEST_NO_ID : Yii::
 
 <?php $this->registerJsFile('@web/js/commentAjax.js', [
     'depends' => JqueryAsset::className(),
-]); ?>
+]); ?>  
+ <!---------------------------------------------/REGISTER JS FILES--------------------------------------------------->

@@ -150,7 +150,7 @@ class DefaultController extends Controller
         
         return [
             'success' => true,
-            'numberOfComments' => count($comments),
+            'numberOfComments' => $post->getNumberOfComments(),
             'comments' => $comments,
         ];
     }
@@ -185,8 +185,18 @@ class DefaultController extends Controller
                 $isCommentOfTransferedPost = true;
             }
         }
-        return ($isCommentOfTransferedPost) ? $comment->delete() : $this->redirect(['/']);       
+              
         
+        if($isCommentOfTransferedPost){
+            if($comment->delete()){
+                $redis = Yii::$app->redis;
+                $key = 'post:'.$postId.':comments';
+                $redis->decr($key);
+                return true;
+            }
+        } else {
+            return $this->redirect(['/']);
+        }     
     }
     
     /**

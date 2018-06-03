@@ -28,7 +28,8 @@
                 
                 var deletedComment = $('#comment'+params.commentId);
                 deletedComment.hide();
-                deletedComment.next().hide();
+                var numOfComments = $('#number-of-comments').text();
+                $('#number-of-comments').empty().append(numOfComments-1);
         
             return false;
             });
@@ -66,7 +67,7 @@
         var $commentSection = $('div#comment-section');
         var $styleOfDeleteButton = $commentSection.attr('data-style-delete');
         var $currentUserId = $commentSection.attr('data-crntuser-id');
-        $commentSection.empty();
+        $('#comment-list-ul').empty();
 
         var $comments = result.comments;
 
@@ -78,21 +79,28 @@
                                 '<button type="button" class="btn btn-default button-edit" id="button-edit" data-toggle="modal" data-target="#myModal2">'+
                                     'Edit&nbsp;&nbsp;<span class="glyphicon glyphicon-edit"></span>'+
                                 '</button>'+
-                              '</a>';
+                              '</a>&nbsp;&nbsp;&nbsp;';
            } else {$editButton='';}
            
 
-           $commentSection.append(
-                '<hr><pre id="comment' + $comments[index].id + '">'
-                    +'<img src="' + $comments[index].authorpicture + '" alt="user picture" style="width:40px; height:40px; border-radius: 50%">'
-                    +'<b>  '+$comments[index].authorname+' at '+$comments[index].updated_at+'</b><br><br>'
-                    +'<span id="comment-text-'+$comments[index].id +'">'+$comments[index].text+'</span>'+
-                    '<br><a class="comment-delete-btn" data-post-id="'+$comments[index].post_id+'" data-comment-id="'+ $comments[index].id+'" style="'+$styleOfDeleteButton+'">'+
-                        '<button class="btn btn-default">Delete</button>'+
-                    '</a>'+$editButton+
-                '</pre>'
+           $('#comment-list-ul').append(
+                '<li class="comment" id="comment' + $comments[index].id + '">'
+                    +'<div class="comment-user-image">'
+                        +'<img src="' + $comments[index].authorpicture + '" alt="user picture" class="comment-image">'
+                    +'</div>'
+                    +'<div class="comment-info">'
+                        +'<h4 class="author"><a href="/profile/'+$comments[index].authornickname+'">'+$comments[index].authorname+'</a> <span>'+$comments[index].updated_at+'</span></h4>'
+                        +'<p id="comment-text-'+$comments[index].id +'">'+$comments[index].text+'</p>'+
+                            $editButton+
+                            '<a class="comment-delete-btn" data-post-id="'+$comments[index].post_id+'" data-comment-id="'+ $comments[index].id+'" style="'+$styleOfDeleteButton+'">'+
+                                '<button class="btn btn-default">Delete</button>'+
+                            '</a>'
+                    +'</div>'        
+               +'</li>'
             );
         }
+               
+        $('#number-of-comments').empty().append(result.numberOfComments);
     }
 })(jQuery);
 

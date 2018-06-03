@@ -14,7 +14,7 @@
             //send data to the server
             $.post('/post/default/like', params, function(data){
                 $numberOfLikes = data.numberOfLikes;
-                $('#likes-number').text('('+$numberOfLikes+')');
+                $('#likes-number').text($numberOfLikes);
                 $buttonUnlike.show();
                 $buttonLike.hide();
             });
@@ -32,7 +32,7 @@
             
             $.post('/post/default/unlike', params, function(data){
                 $numberOfLikes = data.numberOfLikes;
-                $('#likes-number').text('('+$numberOfLikes+')');
+                $('#likes-number').text($numberOfLikes);
                 $buttonUnlike.hide();
                 $buttonLike.show();
             });
