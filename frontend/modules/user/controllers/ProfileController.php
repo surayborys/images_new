@@ -110,7 +110,7 @@ class ProfileController extends Controller
         
         /*@var IdentityInterface $user*/
         $user = $this->getUserById(intval($id));
-        $editProfileForm = new EditProfileForm();
+        $editProfileForm = new EditProfileForm($id);
         $editProfileForm->scenario = EditProfileForm::SCENARIO_PROFILE_UPDATE;
         
         if($editProfileForm->load(Yii::$app->request->post()) && $editProfileForm->validate()) {
@@ -127,7 +127,8 @@ class ProfileController extends Controller
         $editProfileForm->about = $userData->about;
         $editProfileForm->type = $userData->type;
         
-        if($editProfileForm->validate()){
+        
+       if($editProfileForm->validate()){
             return $this->render('edit', [
                 'editProfileForm' => $editProfileForm,
             ]);

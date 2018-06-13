@@ -24,6 +24,13 @@ class EditProfileForm extends Model {
     public $type;
     public $about;
     
+    private $userId;
+    
+    public function __construct($id) {
+        $this->userId = $id;
+    }
+
+
     /**
      * describes scenario @const SCENARIO_PROFILE_UPDATE
      * @return array 
@@ -48,6 +55,7 @@ class EditProfileForm extends Model {
             
             ['nickname', 'trim'],
             ['nickname', 'string', 'min' => 2, 'max' => 20],
+            ['nickname', 'unique', 'targetClass' => '\frontend\models\User', 'filter' => ['!=', 'id', $this->userId],  'message' => 'This nickname has already been taken.'],
             
             ['about', 'string'],
             
@@ -61,7 +69,8 @@ class EditProfileForm extends Model {
      * @return bool
      */
     public function update(IdentityInterface $user) {
-        
+         
+       
         $user->username = $this->username;
         $user->nickname = ($this->nickname) ? $this->nickname : '';
         $user->about = ($this->about) ? $this->about : '';

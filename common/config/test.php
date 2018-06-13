@@ -5,10 +5,10 @@ return [
     'components' => [
         'user' => [
             'class' => 'yii\web\User',
-            'identityClass' => 'common\models\User',
+            'identityClass' => 'frontend\models\User',
         ],
-        'request' => [
+        /*'request' => [
             'cookieValidationKey' => 'test',
-        ],
+        ],*/
     ],
 ];
