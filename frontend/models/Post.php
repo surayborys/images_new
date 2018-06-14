@@ -17,6 +17,7 @@ use Yii;
  * @property string $filename
  * @property string $description
  * @property int $created_at
+ * @property int $complaints
  */
 class Post extends \yii\db\ActiveRecord
 {
@@ -184,5 +185,41 @@ class Post extends \yii\db\ActiveRecord
         $key = 'post:'. $this->id .':comments';
         
         return ($redis->get($key)>0)?$redis->get($key):0;
+    }
+    
+    /**
+     * add complain of user (his id) to the redis set fo current post's complains
+     * 
+     * @param frontend\models\User $user
+     * @return boolean
+     */
+    public function report(User $user)
+    {
+        $userId = $user->getId();
+        $redis = Yii::$app->redis;
+        
+        $key = 'postcomplains:'.$this->id;
+        
+        if($redis->sadd($key, $userId)){
+            $this->updateCounters(['complaints'=>1]);
+            return true;
+        } 
+        return false;
+    }
+    
+    /**
+     * to check if the post has been already reported by user
+     * 
+     * @param User $user
+     * @return boolean
+     */
+    public function isReported(User $user)
+    {
+        $userId = $user->getId();
+        $redis = Yii::$app->redis;
+        
+        $key = 'postcomplains:'.$this->id;
+        
+        return($redis->sismember($key, $userId));    
     }
 }

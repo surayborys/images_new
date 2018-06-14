@@ -78,7 +78,18 @@ $current_user_id = (Yii::$app->user->isGuest) ? CURRENT_USER_GUEST_NO_ID : Yii::
                                 <button type="button" class="btn btn-info button-comment" id="button-comment" data-toggle="modal" data-target="#myModal1">
                                     Comment post&nbsp;&nbsp;<span class="glyphicon glyphicon-comment"></span>
                                 </button>   
-                            </div>                                
+                            </div>  
+                            <div class="post-report">
+                                <?php if(!Yii::$app->user->isGuest && $post->isReported(Yii::$app->user->identity)):?>
+                                <span id="post-reported-text">Post has been already reported...</span>
+                                <?php else:?>
+                                <span id="reported-ajax"></span>
+                                <button class="btn btn-default" id="btn-report-post" data-id="<?=$post->id?>">
+                                    Report post
+                                    <i class="fa fa-cog fa-spin fa-fw icon-preloader" id="icon-preloader" style="display:none"></i>
+                                </button>
+                                <?php endif;?>
+                            </div>
                         </div>
                     </article>
 <!----------------------------------------------/POST--------------------------------------------------------------->
@@ -200,5 +211,9 @@ $current_user_id = (Yii::$app->user->isGuest) ? CURRENT_USER_GUEST_NO_ID : Yii::
 
 <?php $this->registerJsFile('@web/js/commentAjax.js', [
     'depends' => JqueryAsset::className(),
-]); ?>  
+]); ?>
+ 
+ <?php $this->registerJsFile('@web/js/reportPost.js', [
+    'depends' => JqueryAsset::className(),
+]); ?>
  <!---------------------------------------------/REGISTER JS FILES--------------------------------------------------->

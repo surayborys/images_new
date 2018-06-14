@@ -72,6 +72,32 @@ class DefaultController extends Controller
     }
     
     /**
+     * handles report procedure
+     * 
+     * @return mixed|array(JSON)
+     */
+    public function actionReport()
+    {
+        $this->checkAccess();
+        
+        $postId = Yii::$app->request->post('id');
+        /* @var post frontend/models/Post */
+        $post = $this->findPostById($postId);
+        
+        /* @var currentUser frontend/models/User  */
+        $currentUser = Yii::$app->user->identity;
+        
+        $post->report($currentUser);
+        
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        
+        return [
+            'success' => true,
+        ];
+        
+    }
+
+    /**
      * handles like procedure
      * 
      * @return mixed|array(JSON)
