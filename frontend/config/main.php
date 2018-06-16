@@ -58,15 +58,7 @@ return [
                 'post/delete/comment/<postId:\w+>/<commentId:\w+>' => 'post/default/delete-comment',
             ],
         ],
-        'redis' => [
-            'class' => 'yii\redis\Connection',
-            'hostname' => 'localhost',
-            'port' => 6379,
-            'database' => 0,
-        ],
-        'storage' => [
-            'class' => 'frontend\components\Storage',
-        ],
+        
         
         'feedService' => [
             'class' => 'frontend\components\FeedService',

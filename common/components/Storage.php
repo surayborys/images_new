@@ -1,10 +1,10 @@
 <?php
 
 
-namespace frontend\components;
+namespace common\components;
 
 use yii\base\Component;
-use frontend\components\StorageInterface;
+use common\components\StorageInterface;
 use yii\web\UploadedFile;
 use yii\helpers\FileHelper;
 use Yii;

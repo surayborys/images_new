@@ -9,5 +9,14 @@ return [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+        'storage' => [
+            'class' => 'common\components\Storage',
+        ],
+        'redis' => [
+            'class' => 'yii\redis\Connection',
+            'hostname' => 'localhost',
+            'port' => 6379,
+            'database' => 0,
+        ],
     ],
 ];

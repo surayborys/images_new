@@ -27,7 +27,11 @@ $current_user_id = (Yii::$app->user->isGuest) ? CURRENT_USER_GUEST_NO_ID : Yii::
                         <div class="post-meta">
                             <div class="post-title">
                                 <img src="<?php echo $post->user->getPicture();?>" class="author-image" />
-                                <div class="author-name"><a href="#"><?php echo Html::encode($post->user->username);?></a></div>
+                                <div class="author-name">
+                                    <a href="<?php echo Url::to(['/user/profile/view', 'nickname'=>$post->user->getNickname()])?>">
+                                        <?php echo Html::encode($post->user->username);?>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                         <div class="post-type-image">
