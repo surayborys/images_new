@@ -23,6 +23,13 @@ class Post extends \yii\db\ActiveRecord
     {
         return 'post';
     }
+    
+    /**
+     *  use the EVENT_BEFORE_DELETE event for deleting post picture, likes, comments and complaints
+     */
+    public function init() {
+        $this->on(self::EVENT_BEFORE_DELETE, [$this, 'clearGarbage']);
+    }
 
     /**
      * @inheritdoc
@@ -57,5 +64,28 @@ class Post extends \yii\db\ActiveRecord
         }
         
         return false;
+    }
+    
+    /**
+     * clear linked data for deleting post: likes, comments, complains from redis and remove post picture file
+     * 
+     * @return boolean
+     */
+    public function clearGarbage()
+    {
+        $redis = new Yii::$app->redis;
+        Yii::$app->storage->deleteFile($this->filename);
+        
+        $keys = [];
+        $keys['key_for_complaints'] = 'postcomplains:'.$this->id;
+        $keys['key_for_likes'] = 'post:' . $this->id . ':likes';
+        $keys['key_for_comments'] = 'post:'. $this->id.':comments';
+        
+        foreach ($keys as $key)
+        {
+            $redis->del($key);
+        }
+        
+        return true;        
     }
 }

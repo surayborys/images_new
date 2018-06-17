@@ -72,6 +72,12 @@ class ManageController extends Controller
         return $this->redirect(['index']);
     }
     
+    /**
+     * aprove the post (delete all complaints)
+     * 
+     * @param type $id
+     * @return mixed
+     */
     public function actionAprove($id)
     {
         $this->findModel($id)->aprove();
