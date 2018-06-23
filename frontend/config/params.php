@@ -15,4 +15,9 @@ return [
     ],
     
     'feedLimit' => 200,
+    
+    'supportedLanguages' => [
+        'en-US',
+        'ru-RU',
+    ]
 ];

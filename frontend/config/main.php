@@ -9,7 +9,11 @@ $params = array_merge(
 return [
     'id' => 'app-frontend',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log', [
+        //class for selecting an interface language depending on an information in client cookies
+        'class' => 'frontend\components\LanguageSelector',
+    ]],
+    'language' => 'en-US',
     'controllerNamespace' => 'frontend\controllers',
     'modules' => [
         'user' => [
@@ -62,7 +66,15 @@ return [
         
         'feedService' => [
             'class' => 'frontend\components\FeedService',
-        ]
+        ],
+        
+        'i18n' => [
+            'translations' => [
+                '*' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                ],
+            ],
+        ],
     ],
     'params' => $params,
 ];

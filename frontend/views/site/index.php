@@ -9,7 +9,7 @@ use yii\helpers\HtmlPurifier;
 use yii\helpers\Html;
 use Yii;
 
-$this->title = 'News Feed';
+$this->title = Yii::t('main', 'News Feed');
 ?>
 
     <div class="container full">
@@ -58,7 +58,7 @@ $this->title = 'News Feed';
                                         </a>
                                     </div>
                                     <div class="post-comments">
-                                        <a href="<?=Url::to(['/post/default/view', 'id' => $feedItem->post_id])?>"><?=$feedItem->getNumberOfComments();?> Comments</a>
+                                        <a href="<?=Url::to(['/post/default/view', 'id' => $feedItem->post_id])?>"><?=$feedItem->getNumberOfComments();?>&nbsp;<?= Yii::t('main', 'Comments')?></a>
 
                                     </div>
                                     <div class="post-date">
@@ -69,7 +69,7 @@ $this->title = 'News Feed';
                             <!-- feed item -->
                                 <?php endforeach;?>
                             <?php else: ?>
-                                <p class="text-center">Nobody posted yet</p>
+                            <p class="text-center"><?= Yii::t('main', 'Nobody posted yet')?></p>
                             <?php endif;?>
                         </div>
                     </div>

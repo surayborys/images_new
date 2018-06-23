@@ -11,6 +11,8 @@ use yii\helpers\HtmlPurifier;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
+$this->title = Yii::t('post', 'Post page');
+
 
 const CURRENT_USER_GUEST_NO_ID = 'guest_no_id';
 
@@ -61,17 +63,17 @@ $current_user_id = (Yii::$app->user->isGuest) ? CURRENT_USER_GUEST_NO_ID : Yii::
                             ?>
                             &nbsp;&nbsp;
                             <a href="#" class="btn btn-default button-like" id="button-like" data-id="<?php echo $post->id;?>" style="display: <?=$likeDisplay?>">
-                                Like&nbsp;&nbsp;
+                                <?= Yii::t('post', 'Like')?>&nbsp;&nbsp;
                                 <span class="glyphicon glyphicon-thumbs-up"></span>
                             </a>
 
 
                             <a href="#" class="btn btn-default button-like" id="button-unlike" data-id="<?php echo $post->id;?>" style="display: <?=$unlikeDisplay?>">
-                                Unlike&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-down"></span>
+                                <?= Yii::t('post', 'Unlike')?>&nbsp;&nbsp;<span class="glyphicon glyphicon-thumbs-down"></span>
                             </a>
                             <div class="post-comments">
                                 <a>
-                                    <span id="number-of-comments"><?=$post->getNumberOfComments()?></span>&nbsp;<?=($post->getNumberOfComments()==1)?'comment':'comments'?>
+                                    <span id="number-of-comments"><?=$post->getNumberOfComments()?></span>&nbsp;<?=($post->getNumberOfComments()==1) ? Yii::t('post', 'comment'): Yii::t('post', 'comments')?>
                                 </a>
 
                             </div>
@@ -80,16 +82,16 @@ $current_user_id = (Yii::$app->user->isGuest) ? CURRENT_USER_GUEST_NO_ID : Yii::
                             </div>
                             <div class="post-report">
                                 <button type="button" class="btn btn-info button-comment" id="button-comment" data-toggle="modal" data-target="#myModal1">
-                                    Comment post&nbsp;&nbsp;<span class="glyphicon glyphicon-comment"></span>
+                                    <?= Yii::t('post', 'Comment post')?>&nbsp;&nbsp;<span class="glyphicon glyphicon-comment"></span>
                                 </button>   
                             </div>  
                             <div class="post-report">
                                 <?php if(!Yii::$app->user->isGuest && $post->isReported(Yii::$app->user->identity)):?>
-                                <span id="post-reported-text">Post has been already reported...</span>
+                                <span id="post-reported-text"><?= Yii::t('post', 'Post has been already reported...')?></span>
                                 <?php else:?>
                                 <span id="reported-ajax"></span>
                                 <button class="btn btn-default" id="btn-report-post" data-id="<?=$post->id?>">
-                                    Report post
+                                    <?= Yii::t('post', 'Report post')?>
                                     <i class="fa fa-cog fa-spin fa-fw icon-preloader" id="icon-preloader" style="display:none"></i>
                                 </button>
                                 <?php endif;?>

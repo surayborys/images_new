@@ -2,6 +2,7 @@
 (function($, undefined){
     var $buttonReport = $('#btn-report-post');
     var $iconPreloader = $('#icon-preloader');
+    var $language = $('#language');
     
     $(function(){
         $buttonReport.click(function(event){
@@ -15,7 +16,12 @@
             $.post('/post/default/report', params, function(data){
                 $buttonReport.hide();
                 $iconPreloader.hide();
-                $('#reported-ajax').text('Post has been already reported...');
+                if ($language.attr('data-lang') == 'ru-RU') {
+                    var $reportedText = 'Вы уже пожаловались на этот пост...';
+                } else {
+                    $reportedText = 'Post has been already reported...';
+                }
+                $('#reported-ajax').text($reportedText);
             });
             
             event.stopImmediatePropagation();
