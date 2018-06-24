@@ -14,7 +14,10 @@ return [
     'modules' => [
         'complaints' => [
              'class' => 'backend\modules\complaints\Module',
-        ]
+        ],
+         'user' => [
+            'class' => 'backend\modules\user\Module',
+        ],
     ],
     'components' => [
         'request' => [
