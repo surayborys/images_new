@@ -18,5 +18,8 @@ return [
             'port' => 6379,
             'database' => 0,
         ],
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+        ],
     ],
 ];

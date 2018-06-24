@@ -6,7 +6,7 @@ use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
-
+use yii\helpers\ArrayHelper;
 /**
  * User model
  *
@@ -21,11 +21,17 @@ use yii\web\IdentityInterface;
  * @property integer $updated_at
  * @property string $password write-only password
  * @property string $picture
+ * @property array $roles
  */
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
+    
+    const ROLE_ADMIN = 'admin';
+    const ROLE_MODERATOR = 'moderator';
+    
+    public $roles;
 
 
     /**
@@ -41,6 +47,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function init() {
         $this->on(self::EVENT_BEFORE_DELETE, [$this, 'clearGarbage']);
+        $this->on(self::EVENT_AFTER_UPDATE, [$this, 'updateRoles']);
     }
 
     /**
@@ -61,6 +68,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            ['roles', 'safe'],
         ];
     }
 
@@ -215,4 +223,54 @@ class User extends ActiveRecord implements IdentityInterface
         Yii::$app->storage->deleteFile($this->picture); 
         return true;        
     }
+    
+   
+    /**
+     * build an array with params of user roles (for instance, for dropdown list)
+     * 
+     * @return array
+     */
+    public function getRolesDropdown()
+    {
+        return [
+            self::ROLE_ADMIN => 'Admin',
+            self::ROLE_MODERATOR => 'Moderator'
+        ];
+    }
+    
+    /**
+     * update user roles
+     */
+    public function updateRoles()
+    {
+       //remove previously setted roles
+        Yii::$app->authManager->revokeAll($this->getId());
+        
+        if(is_array($this->roles)) {
+            foreach ($this->roles as $roleName) {
+                if($role = Yii::$app->authManager->getRole($roleName)) {
+                    Yii::$app->authManager->assign($role, $this->getId());
+                }
+            }
+        }
+    }
+    
+    /**
+     * get user roles after had find the user
+     */
+    public function afterFind() 
+    {
+        $this->roles = $this->getRoles();
+    }
+    
+    /**
+     * get user roles by user id
+     * @return array
+     */
+    private function getRoles()
+    {
+        $roles = Yii::$app->authManager->getRolesByUser($this->getId());
+        return ArrayHelper::getColumn($roles, 'name', false);
+    }
+    
 }

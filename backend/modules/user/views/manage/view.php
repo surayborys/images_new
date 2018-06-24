@@ -49,6 +49,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]);
                 }
             ],
+            [
+                'attribute' => 'roles',
+                'format' => 'html',
+                'value' => function($data) {
+                    return implode(',', $data->roles);
+                }
+            ],
         ],
     ]) ?>
 
