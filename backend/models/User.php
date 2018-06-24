@@ -20,6 +20,7 @@ use yii\web\IdentityInterface;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
+ * @property string $picture
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -33,6 +34,13 @@ class User extends ActiveRecord implements IdentityInterface
     public static function tableName()
     {
         return '{{%user}}';
+    }
+    
+    /**
+     *  use the EVENT_BEFORE_DELETE event for deleting user picture and subscriptions from redis
+     */
+    public function init() {
+        $this->on(self::EVENT_BEFORE_DELETE, [$this, 'clearGarbage']);
     }
 
     /**
@@ -185,5 +193,26 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+    
+    /**
+     * to get user's profile picture or use default profile picture
+     * @return string
+     */
+    public function getPicture()
+    {
+        return ($this->picture) ? Yii::$app->storage->getFile($this->picture) : Yii::$app->params['defaultProfileImage'];
+    }
+    
+    /**
+     * remove profile picture file
+     * 
+     * @return boolean
+     */
+    public function clearGarbage()
+    {
+        
+        Yii::$app->storage->deleteFile($this->picture); 
+        return true;        
     }
 }

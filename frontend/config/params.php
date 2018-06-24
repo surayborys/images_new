@@ -2,7 +2,7 @@
 return [
     'adminEmail'  => 'admin@example.com',
     
-    'defaultProfileImage' => '/images/default.jpg',
+    
     
     'profilePicture' => [
         'maxWidth' => 1280,
