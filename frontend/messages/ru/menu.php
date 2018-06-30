@@ -8,5 +8,6 @@ return [
     'Signup' => 'Регистрация',
     'Login' => 'Войти',
     'Logout ({{username}})' => 'Выход ({{username}})',
-    'Change language' => 'Изменить язык'
+    'Change language' => 'Изменить язык',
+    'Search' => 'Поиск',
     ];

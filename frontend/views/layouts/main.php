@@ -59,8 +59,7 @@ FontAwesomeAsset::register($this);
                 <div class="container">
                     <div class="main-nav-wrapper">
                         <nav class="main-menu">
-                            <?php 
-                                
+                            <?php
                                 if (!Yii::$app->user->isGuest){
                                     $menuItems = [
                                         ['label' => Yii::t('menu', 'Newsfeed'), 'url' => ['/site/index']],
@@ -72,12 +71,13 @@ FontAwesomeAsset::register($this);
                                     $menuItems[] = ['label' => Yii::t('menu', 'Signup'), 'url' => ['/user/default/signup']];
                                     $menuItems[] = ['label' => Yii::t('menu', 'Login'), 'url' => ['/user/default/login']];
                                 } else {
+                                    $menuItems[] = ['label' => Yii::t('menu', 'Search') . '&nbsp;<i class="fa fa-search"></i>', 'url' => ['/search/search']] ; 
                                     $menuItems[] = '<li>'
                                         . Html::beginForm(['/user/default/logout'], 'post')
                                         . Html::submitButton(
                                             Yii::t('menu', 'Logout ({{username}})', [
                                                 'username' => Yii::$app->user->identity->username,
-                                            ]) . '<i class="fa fa-sign-out"></i>',
+                                            ]) . '&nbsp;<i class="fa fa-sign-out"></i>',
                                             ['class' => 'btn btn-link logout']
                                         )
                                         . Html::endForm()
@@ -86,6 +86,7 @@ FontAwesomeAsset::register($this);
                                 echo Nav::widget([
                                     'options' => ['class' => 'menu navbar-nav navbar-right'],
                                     'items' => $menuItems,
+                                    'encodeLabels' => false,
                                 ]);
                             ?>
                             <!--ul class="menu">

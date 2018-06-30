@@ -132,12 +132,12 @@ $current_user_id = (Yii::$app->user->isGuest) ? CURRENT_USER_GUEST_NO_ID : Yii::
                                                         <a data-post-id="<?=$post->id?>" data-comment-id="<?=$comment->id?>" class="comment-edit-btn">
                                                                 <!-- Button trigger modal -->
                                                                 <button type="button" class="btn btn-default button-edit" id="button-edit" data-toggle="modal" data-target="#myModal2">
-                                                                    Edit&nbsp;&nbsp;<span class="glyphicon glyphicon-edit"></span>
+                                                                    <?=Yii::t('profile', 'Edit')?>&nbsp;&nbsp;<span class="glyphicon glyphicon-edit"></span>
                                                                 </button>
                                                         </a>&nbsp;
                                                     <?php endif;?>
                                                     <a style="<?=$styleOfDeleteButton?>" data-post-id="<?=$post->id?>" data-comment-id="<?=$comment->id?>" class="comment-delete-btn">
-                                                        <button class="btn btn-default">Delete</button>
+                                                        <button class="btn btn-default"><?=Yii::t('profile', 'Delete')?></button>
                                                     </a>
                                                 </div>
                                             </li>
@@ -168,16 +168,16 @@ $current_user_id = (Yii::$app->user->isGuest) ? CURRENT_USER_GUEST_NO_ID : Yii::
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Comment</h4>
+                <h4 class="modal-title" id="myModalLabel"><?=Yii::t('profile', 'Comment')?></h4>
             </div>
             <div class="modal-body">
                 <form method="post" id="ajax-form">
-                    <label for="commentTextarea">Type your comment</label>
+                    <label for="commentTextarea"><?=Yii::t('profile', 'Type your comment')?></label>
                     <textarea class="form-control" id="commentTextarea" rows="4" name="text"></textarea>
                     <input type="hidden" name="postId" value="<?php echo $post->id?>">
                     <hr><hr>
-                    <button type="button" class="btn btn-default" id="submit-button" data-dismiss="modal">Add comment</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" id="submit-button" data-dismiss="modal"><?=Yii::t('profile', 'Add comment')?></button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><?=Yii::t('profile', 'Close')?></button>
                 </form>
             </div>
         </div>
@@ -190,17 +190,17 @@ $current_user_id = (Yii::$app->user->isGuest) ? CURRENT_USER_GUEST_NO_ID : Yii::
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabelEdit">Edit</h4>
+                <h4 class="modal-title" id="myModalLabelEdit"><?=Yii::t('profile', 'Edit')?></h4>
             </div>
             <div class="modal-body">
                 <form method="post" id="ajax-edit-form">
-                    <label for="commentTextarea">Type your comment</label>
+                    <label for="commentTextarea"><?=Yii::t('profile', 'Type your comment')?></label>
                     <textarea class="form-control" id="commentEditTextarea" rows="4" name="text"></textarea>
                     <input type="hidden" name="postId" value="<?php echo $post->id?>">
                     <input id="comment-id-input" type="hidden" name="commentId" value="">
                     <hr><hr>
-                    <button type="button" class="btn btn-default" id="submit-button-edit" data-dismiss="modal">Edit comment</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" id="submit-button-edit" data-dismiss="modal"><?=Yii::t('profile', 'Edit comment')?></button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><?=Yii::t('profile', 'Close')?></button>
                 </form>
             </div>
         </div>

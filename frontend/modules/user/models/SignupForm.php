@@ -3,12 +3,14 @@ namespace frontend\modules\user\models;
 
 use yii\base\Model;
 use frontend\models\User;
+use Yii;
 
 /**
  * Signup form
  */
 class SignupForm extends Model
 {
+    
     public $username;
     public $email;
     public $password;
@@ -22,7 +24,12 @@ class SignupForm extends Model
         return [
             ['username', 'trim'],
             ['username', 'required'],
-            ['username', 'string', 'min' => 2, 'max' => 255],
+            [
+                'username', 
+                'string', 
+                'min' => Yii::$app->params['minUsernameLength'], 
+                'max' => Yii::$app->params['maxUsernameLength'],
+            ],
 
             ['email', 'trim'],
             ['email', 'required'],

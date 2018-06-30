@@ -11,12 +11,12 @@ $this->title = \Yii::t('login','Login');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-login">
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p><?= Yii::t('login', 'Please fill out the following fields to login:')?></p>
+    
 
     <div class="row">
-        <div class="col-lg-5">
+        <div class="col-lg-6">
+            <h1><?= Html::encode($this->title) ?></h1>
+            <p><?= Yii::t('login', 'Please fill out the following fields to login:')?></p>
             <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
 
                 <?= $form->field($model, 'email')->textInput(['autofocus' => true])->label(Yii::t('login', 'Email')) ?>
@@ -34,15 +34,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
 
             <?php ActiveForm::end(); ?>
-            
-            <h3 class="text-primary">
-                <?= Yii::t('login', 'Login with')?>:
-            </h3>
+        </div>
+        <div class="col-lg-6">
+            <h1><?= Yii::t('login', 'Login with') . ' Google'?></h3>
+            <p><?= Yii::t('login','Use your google account to login')?></p>
             <?= yii\authclient\widgets\AuthChoice::widget([
                  'baseAuthUrl' => ['/user/default/auth'],
                  'popupMode' => false,
             ]) ?>
-            
-        </div>
+        </div>    
+        
     </div>
 </div>

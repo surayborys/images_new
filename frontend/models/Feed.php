@@ -77,10 +77,8 @@ class Feed extends \yii\db\ActiveRecord
      */
     public function getNumberOfComments()
     {
-        $redis = Yii::$app->redis;
-        $key = 'post:'. $this->post_id .':comments';
-        
-        return ($redis->get($key)>0)?$redis->get($key):0;
+        $post = $this->getPostEntity();
+        return $post->getNumberOfComments();
     }
     
 }

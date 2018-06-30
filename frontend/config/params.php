@@ -19,5 +19,8 @@ return [
     'supportedLanguages' => [
         'en-US',
         'ru-RU',
-    ]
+    ],
+    
+    'minUsernameLength' => 2,
+    'maxUsernameLength' => 255,
 ];

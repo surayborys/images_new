@@ -13,6 +13,8 @@ use yii\helpers\HtmlPurifier;
 use yii\helpers\Url;
 use dosamigos\fileupload\FileUpload;
 
+$this->title = Yii::t('profile','Profile page');
+
 ?>
 
 <div class="page-posts no-padding">
@@ -32,12 +34,12 @@ use dosamigos\fileupload\FileUpload;
                             
                             <?php if(!Yii::$app->user->isGuest && $currentUser->getId() == $user->getId()):?>
                             <a href="<?php echo(Url::to(['/user/profile/edit', 'id'=>$user->getId()]))?>">
-                                <button class="btn btn-default btn-sm" style="width: 120px">Edit profile</button>
+                                <button class="btn btn-default btn-sm" style="width: 120px"><?=Yii::t('profile','Edit profile')?></button>
                             </a>
                                 <!--Display the UNSET PICTURE button only if the profile picture is setted-->
                                 <?php if($user->picture):?>
                                 <a href="<?php echo(Url::to(['/user/profile/unset-picture', 'id'=>$user->getId()]))?>">
-                                    <button class="btn btn-default btn-sm" style="width: 120px">Unset picture</button>
+                                    <button class="btn btn-default btn-sm" style="width: 120px"><?=Yii::t('profile','Unset picture')?></button>
                                 </a>
                                 <?php endif;?>
                                 <!--/PICTURE UNSET BUTTON-->
@@ -68,7 +70,7 @@ use dosamigos\fileupload\FileUpload;
                             
                         </div>
                         <br>
-                        <div class="alert alert-success" id="profile-image-success" style="display: none">Profile succesfully updated</div>
+                        <div class="alert alert-success" id="profile-image-success" style="display: none"><?=Yii::t('profile','Profile succesfully updated')?></div>
                         <div class="alert alert-danger" id="profile-image-fail" style="display: none"></div>
                         
                         <?php if($user->about):?>
@@ -85,12 +87,12 @@ use dosamigos\fileupload\FileUpload;
                             hasn't yet followed by user $user -->
                             <?php if(Yii::$app->user->isGuest || $currentUser->checkIfFollowsBy($user) == false):?>
                                 <a href="<?php echo(Url::to(['/user/profile/follow', 'id'=>$user->getId()]))?>">
-                                    <button class="btn btn-primary" style="width: 120px">Subscribe</button>
+                                    <button class="btn btn-primary" style="width: 120px"><?=Yii::t('profile','Subscribe')?></button>
                                 </a>
                             <!--Show only unsubscribe button if the current user has followed by the user $user-->
                             <?php elseif($currentUser->checkIfFollowsBy($user) == true):?> 
                             <a href="<?php echo(Url::to(['/user/profile/unsubscribe', 'id'=>$user->getId()]))?>">
-                                <button class="btn btn-primary" style="width: 120px">Unsubscribe</button>
+                                <button class="btn btn-primary" style="width: 120px"><?=Yii::t('profile','Unsubscribe')?></button>
                             </a> 
                             <?php endif;?>
                         </h2>
@@ -100,7 +102,7 @@ use dosamigos\fileupload\FileUpload;
                         <!--Show the 'FRIENS, WHO ARE ALSO FOLLOWING' block only for logged users if they are-->
                         <div>
                             <?php if(!Yii::$app->user->isGuest && count($mutualFollowers = $currentUser->getMutualSubscriptionsTo($user))>0): ?>
-                            <h5>Friends, who're also following:</h5>
+                            <h5><?=Yii::t('profile','Friends, who\'re also following')?>:</h5>
                                 <?php foreach ($mutualFollowers as $mutualFollower):?>
                                     <a href="<?php echo Url::to(['/user/profile/view', 'nickname' => ($mutualFollower['nickname']) ? $mutualFollower['nickname'] : ($mutualFollower['id'])]);?>">
                                                         <?php echo $mutualFollower['username'] ;?>
@@ -112,13 +114,13 @@ use dosamigos\fileupload\FileUpload;
                         <!-- /FRIENS, WHO ARE ALSO FOLLOWING-->
                         <div class="profile-bottom">
                             <div class="profile-post-count">
-                                <span><?=$user->countPosts();?>&nbsp;<?php echo ($user->countPosts()==1)?'post':'posts'?></span>
+                                <span><?=$user->countPosts();?>&nbsp;<?php echo ($user->countPosts()==1) ? Yii::t('profile', 'post') : Yii::t('profile', 'posts')?></span>
                             </div>
                             <div class="profile-followers">
-                                <a href="#" data-toggle="modal" data-target="#myModal1"><?php echo $user->countSubscriptions(); ?>&nbsp;following</a>
+                                <a href="#" data-toggle="modal" data-target="#myModal1"><?php echo $user->countSubscriptions(); ?>&nbsp;<?=Yii::t('profile', 'following')?></a>
                             </div>
                             <div class="profile-following">
-                                <a href="#" data-toggle="modal" data-target="#myModal2"><?php echo $user->countFollowers(); ?>&nbsp;followers</a>    
+                                <a href="#" data-toggle="modal" data-target="#myModal2"><?php echo $user->countFollowers(); ?>&nbsp;<?=Yii::t('profile', 'followers')?></a>    
                             </div>
                         </div>
                     </article>
@@ -135,7 +137,7 @@ use dosamigos\fileupload\FileUpload;
                             </div>
                                 <?php endforeach;?>
                             <?php else:?>
-                                <p class="text-center">No posts yet :(</p>
+                                <p class="text-center"><?=Yii::t('profile', 'No posts yet')?> :(</p>
                             <?php endif;?>
                             
                         </div>
@@ -155,7 +157,7 @@ use dosamigos\fileupload\FileUpload;
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Subscriptions</h4>
+                <h4 class="modal-title" id="myModalLabel"><?=Yii::t('profile', 'Subscriptions')?></h4>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -169,7 +171,7 @@ use dosamigos\fileupload\FileUpload;
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?=Yii::t('profile', 'Close')?></button>
             </div>
         </div>
     </div>
@@ -182,7 +184,7 @@ use dosamigos\fileupload\FileUpload;
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Followers</h4>
+                <h4 class="modal-title" id="myModalLabel"><?=Yii::t('profile', 'Followers')?></h4>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -196,7 +198,7 @@ use dosamigos\fileupload\FileUpload;
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?=Yii::t('profile', 'Close')?></button>
             </div>
         </div>
     </div>

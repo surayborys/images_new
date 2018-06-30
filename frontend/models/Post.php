@@ -181,10 +181,12 @@ class Post extends \yii\db\ActiveRecord
      */
     public function getNumberOfComments()
     {
-        $redis = Yii::$app->redis;
+        return count($this->comments);
+        
+        /*$redis = Yii::$app->redis;
         $key = 'post:'. $this->id .':comments';
         
-        return ($redis->get($key)>0)?$redis->get($key):0;
+        return ($redis->get($key)>0)?$redis->get($key):0;*/
     }
     
     /**
