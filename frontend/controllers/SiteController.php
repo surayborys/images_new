@@ -2,8 +2,10 @@
 namespace frontend\controllers;
 
 use Yii;
+use yii\helpers\Url;
 use yii\base\InvalidParamException;
 use yii\web\BadRequestHttpException;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use frontend\models\User;
 use frontend\models\Feed;
@@ -27,6 +29,29 @@ class SiteController extends Controller
         ];
     }
     
+    public function behaviors() {
+        //set access rules
+        //'@' - logged user
+        return[
+            'access' => [
+                'class' => AccessControl::className(),
+                'denyCallback' => function($rule, $action) {
+                            Yii::$app->session->setFlash('danger', Yii::t('login','Please, login to continue...'));
+                            return $this->redirect(Url::to(['/user/default/login']));
+                        },
+                'only' => ['index'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index'],
+                        'roles' => ['@'],
+                        
+                    ],
+                ],
+            ],
+        ];       
+    }
+    
     /**
      * Displays homepage.
      *
@@ -34,12 +59,7 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        if(Yii::$app->user->isGuest) {
-             
-            Yii::$app->session->setFlash('danger', 'Please, login to continue');
-            return $this->redirect(['/user/default/login']);
-        }
-        
+                
         $limit = Yii::$app->params['feedLimit'];
         
         /**

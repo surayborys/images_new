@@ -22,7 +22,8 @@ APPLICATION FUNCTIONALITY:
 .....like/unlike post</br>
 .....report post</br>
 .....follow/unfollow user</br>
-.....view news feed</br></br>
+.....view news feed</br>
+.....search user by his username</br></br>
 
 ..backend (admin part)</br>
 .....set roles to user (admin, moderator)</br>

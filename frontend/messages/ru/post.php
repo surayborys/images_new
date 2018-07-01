@@ -11,6 +11,6 @@ return [
     'Comment post' => 'Комментировать пост',
     'Post has been already reported...' => 'Вы уже пожаловались на этот пост...', 
     'Report post' => 'Пожаловаться', 
-    '' => '', 
+    'A new post has been created' => 'Новый пост создан', 
 ];
 

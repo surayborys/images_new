@@ -16,6 +16,7 @@ $this->title = Yii::t('addPost', 'Add post');
 
 <?php $form = ActiveForm::begin();?>
 <div class="btn btn-info" id="file-input-div"><?= Yii::t('addPost', 'Choose picture')?></div>
+<p id="file-selected" style="display: none"></p>
     <?php echo $form->field($model, 'picture')->fileInput(['style'=>'display:none', 'id'=>'file-input-hidden'])->label('')?>
     <?php echo $form->field($model, 'description')->textarea()->label(Yii::t('addPost', 'Description'))?>
     <?php echo Html::submitButton(Yii::t('addPost','Create'));?>

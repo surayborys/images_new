@@ -13,6 +13,7 @@ use frontend\modules\user\models\PasswordResetRequestForm;
 use frontend\modules\user\models\ResetPasswordForm;
 use frontend\modules\user\models\SignupForm;
 use frontend\modules\user\components\AuthHandler;
+use yii\helpers\Url;
 
 /**
  * Default controller for the `user` module
@@ -28,6 +29,10 @@ class DefaultController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'only' => ['logout', 'signup'],
+                'denyCallback' => function($rule, $action) {
+                            Yii::$app->session->setFlash('danger', Yii::t('login','Please, login to continue...'));
+                            return $this->redirect(Url::to(['/user/default/login']));
+                        },
                 'rules' => [
                     [
                         'actions' => ['signup'],

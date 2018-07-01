@@ -6,6 +6,7 @@ use Yii;
 use yii\web\Controller;
 use frontend\models\User;
 use frontend\modules\user\models\EditProfileForm;
+use yii\filters\AccessControl;
 use yii\helpers\Url;
 use yii\web\IdentityInterface;
 use yii\web\NotFoundHttpException;
@@ -21,6 +22,33 @@ use yii\web\Response;
  */
 class ProfileController extends Controller
 {
+    public function behaviors() {
+        //set access rules
+        //'@' - logged user
+        //'?' - user guest
+        return[
+            'access' => [
+                'class' => AccessControl::className(),
+                'denyCallback' => function($rule, $action) {
+                            Yii::$app->session->setFlash('danger', Yii::t('login','Please, login to continue...'));
+                            return $this->redirect(Url::to(['/user/default/login']));
+                        },
+                'only' => ['view', 'follow', 'unsubscribe', 'uploadPicture'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['follow', 'unsubscribe', 'view', 'uploadPicture'],
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['view'],
+                        'roles' => ['?'],
+                    ],
+                ],
+            ],
+        ];  
+    }                    
     /**
      * to view user's profile
      * @param integer $nickname
@@ -52,11 +80,7 @@ class ProfileController extends Controller
      */
     public function actionFollow($id)
     {
-        if(\Yii::$app->user->isGuest) {
-            return $this->redirect(Url::to('/user/default/login')); 
-        }
-        
-        /*@var $loggedUser frontend\models\User */
+       /*@var $loggedUser frontend\models\User */
         $loggedUser = Yii::$app->user->identity;
         /*@var $userToFollow frontend\models\User*/
         $userToFollow = $this->getUserById($id);
@@ -74,9 +98,9 @@ class ProfileController extends Controller
      */
     public function actionUnsubscribe($id)
     {
-        if(\Yii::$app->user->isGuest) {
+        /*if(\Yii::$app->user->isGuest) {
             return $this->redirect(Url::to('/user/default/login')); 
-        }
+        }*/
         
         /*@var $loggedUser frontend\models\User */
         $loggedUser = Yii::$app->user->identity;
@@ -102,7 +126,7 @@ class ProfileController extends Controller
     public function actionEdit($id){
                
         if(!$this->checkAccessForProfileEdition($id)) {
-            Yii::$app->session->setFlash('error', 'unexpected identifier.');
+            Yii::$app->session->setFlash('error', Yii::t('main', 'unexpected identifier.'));
             return $this->redirect(Url::to(['/site/index']));
         }
         
@@ -115,9 +139,9 @@ class ProfileController extends Controller
         
         if($editProfileForm->load(Yii::$app->request->post()) && $editProfileForm->validate()) {
             if($editProfileForm->update($user)) {                
-               Yii::$app->session->setFlash('success', 'Profile data successfully updated.');
+               Yii::$app->session->setFlash('success', Yii::t('profile', 'Profile data successfully updated.'));
             } else {
-                Yii::$app->session->setFlash('error', 'Error while trying to update profile. Please, try again later');
+                Yii::$app->session->setFlash('error', Yii::t('profile', 'Error while trying to update profile. Please, try again later'));
             }
             return $this->redirect(Url::to(['/user/profile/view', 'nickname'=> $user->getNickname()]));
         }
@@ -133,7 +157,7 @@ class ProfileController extends Controller
                 'editProfileForm' => $editProfileForm,
             ]);
         }else{
-            Yii::$app->session->setFlash('error', 'Enable to load profile data. We\'re working to fix the problem as soon as posible');
+            Yii::$app->session->setFlash('error', Yii::t('profile','Enable to load profile data. We\'re working to fix the problem as soon as posible'));
             return $this->actionMailToAdmin($user);
         }        
     }
@@ -244,12 +268,12 @@ class ProfileController extends Controller
             $fileToDelete = $user->picture;
             $user->picture = null;
             if($user->save(false, ['picture']) && Yii::$app->storage->deleteFile($fileToDelete)){
-                Yii::$app->session->setFlash('success', 'Profile image has been successfully unseted.');
+                Yii::$app->session->setFlash('success', Yii::t('profile', 'Profile image has been successfully unseted'));
             }
             
             return $this->redirect(Url::to(['/user/profile/view', 'nickname'=> $user->getNickname()]));
         }
-        Yii::$app->session->setFlash('error', 'Enable to unset image');
+        Yii::$app->session->setFlash('error', Yii::t('main','Enable to unset image'));
         return $this->redirect(Url::to('site/index'));        
     }
 }

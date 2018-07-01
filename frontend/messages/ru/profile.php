@@ -25,4 +25,8 @@ return [
     'Add comment' => 'Добавить комментарий',
     'Close' => 'Закрыть',
     'Edit comment' => 'Редактировать комментарий',
+    'Profile image has been successfully unseted'=>'Фото вашего профиля успешно удалено',
+    'Profile data successfully updated.'=>'Ваш профиль успешно обновлен',
+    'Error while trying to update profile. Please, try again later'=>'Ошибка при попытке обновить профиль. Пожалуйста, попробуйте позже',
+    'Enable to load profile data. We\'re working to fix the problem as soon as posible' => 'Невозможно загрузить данные профиля. Мы уже работаем, чтобы решить проблему',
 ];

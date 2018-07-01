@@ -11,5 +11,6 @@ return [
     'If you forgot your password you can' => 'Если вы забыли свой пароль, вы можете',
     'reset it' => 'восстановить его',
     'Login with' => 'Войти через',
-    'Use your google account to login' => 'Используйте ваш google аккаунт для входа' 
+    'Use your google account to login' => 'Используйте ваш google аккаунт для входа',
+    'Please, login to continue...' => 'Чтобы продолжить, войдите в ваш аккаунт...'
 ];

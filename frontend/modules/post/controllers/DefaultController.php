@@ -5,6 +5,7 @@ namespace frontend\modules\post\controllers;
 use yii\web\Controller;
 use yii\web\UploadedFile;
 use frontend\modules\post\models\forms\PostForm;
+use yii\filters\AccessControl;
 use Yii;
 use yii\helpers\Url;
 use frontend\models\Post;
@@ -18,13 +19,40 @@ use frontend\models\Comment;
 class DefaultController extends Controller
 {
     /**
+     * {@inheritdoc}
+     */
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['create', 'report', 'like', 'unlike', 'comment', 'deleteComment', 'editComment', 'view'],
+                'denyCallback' => function($rule, $action) {
+                            Yii::$app->session->setFlash('danger', Yii::t('login','Please, login to continue...'));
+                            return $this->redirect(Url::to(['/user/default/login']));
+                        },
+                'rules' => [
+                    [
+                        'actions' => ['view'],
+                        'allow' => true,
+                        'roles' => ['?'],
+                    ],
+                    [
+                        'actions' => ['create', 'report', 'like', 'unlike', 'comment', 'deleteComment', 'editComment', 'view'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
+    }
+    
+    /**
      * action handles creatong a new post
      * @return mixed
      */
     public function actionCreate()
-    {
-        $this->checkAccess();
-        
+    {        
         $currentUser = Yii::$app->user->identity;
         $model = new PostForm($currentUser);
         
@@ -33,7 +61,7 @@ class DefaultController extends Controller
             $model->picture = UploadedFile::getInstance($model, 'picture');
             
             if($model->save()){
-                Yii::$app->session->setFlash('success', 'A new post has been created');
+                Yii::$app->session->setFlash('success', Yii::t('profile','A new post has been created'));
             }
             return $this->redirect(Url::to(['/user/profile/view', 'nickname'=>$currentUser->getNickname()]));
         }
@@ -77,9 +105,7 @@ class DefaultController extends Controller
      * @return mixed|array(JSON)
      */
     public function actionReport()
-    {
-        $this->checkAccess();
-        
+    {        
         $postId = Yii::$app->request->post('id');
         /* @var post frontend/models/Post */
         $post = $this->findPostById($postId);
@@ -102,9 +128,8 @@ class DefaultController extends Controller
      * 
      * @return mixed|array(JSON)
      */
-    public function actionLike(){
-        
-        $this->checkAccess();
+    public function actionLike()
+    {
         
         $postId = Yii::$app->request->post('id');
         /* @var post frontend/models/Post */
@@ -129,9 +154,8 @@ class DefaultController extends Controller
      * 
      * @return mixed|array(JSON)
      */
-    public function actionUnlike(){
-        
-        $this->checkAccess();
+    public function actionUnlike()
+    {
         
         //get data, sended with method "POST" from JavaScript
         $postId = Yii::$app->request->post('id');
@@ -159,7 +183,6 @@ class DefaultController extends Controller
      */
     public function actionComment()
     {
-        $this->checkAccess(); 
         //get data, sended by JavaScript with the "POST" method
         $text = Yii::$app->request->post('text');
         $postId = Yii::$app->request->post('postId');
@@ -193,8 +216,6 @@ class DefaultController extends Controller
         $commentId = Yii::$app->request->post('commentId');
         /* @var post frontend/models/Post */
         $post = $this->findPostById($postId);
-        
-        $this->checkAccess();
         
         if($post->user->id != Yii::$app->user->identity->id) {
             
@@ -232,7 +253,6 @@ class DefaultController extends Controller
      */
     public function actionEditComment()
     {
-        $this->checkAccess();
         //get data, sended by JavaScript with the "POST" method
         $text = Yii::$app->request->post('text');
         $postId = Yii::$app->request->post('postId');
@@ -286,7 +306,7 @@ class DefaultController extends Controller
     {
         if(Yii::$app->user->isGuest) {
              
-            Yii::$app->session->setFlash('danger', 'Please, login to continue');
+            Yii::$app->session->setFlash('danger', Yii::t('login','Please, login to continue...'));
             return $this->redirect(['/user/default/login']);
         }
     }
